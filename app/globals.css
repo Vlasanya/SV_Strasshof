@@ -1,0 +1,280 @@
+/* Fallback webfonts for the "classic" theme (primary fonts load via next/font). */
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Outfit:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ===========================================================================
+   THEME: fonteta (default)
+   Brand: Black #111111 (60%) · White #F5F5F5 (30%) · Red #C8102E (10%)
+   Typography: Bebas Neue (display) · Montserrat (body)
+   =========================================================================== */
+:root {
+  --font-size: 16px;
+
+  --background: #f5f5f5;
+  --foreground: #111111;
+  --card: #ffffff;
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+
+  --primary: #c8102e;
+  --primary-foreground: #f5f5f5;
+  --secondary: #ececec;
+  --secondary-foreground: #111111;
+  --muted: #ececec;
+  --muted-foreground: #5a5a5a;
+  --accent: #c8102e;
+  --accent-foreground: #f5f5f5;
+  --destructive: #c8102e;
+  --destructive-foreground: #f5f5f5;
+
+  --border: rgba(0, 0, 0, 0.08);
+  --input: transparent;
+  --input-background: #ffffff;
+  --ring: #c8102e;
+
+  /* Dark surfaces used for hero, match center, teams, footer. */
+  --surface-dark: #111111;
+  --surface-dark-2: #1a1a1a;
+  --on-dark: #f5f5f5;
+  --on-dark-muted: rgba(245, 245, 245, 0.65);
+
+  /* Overlay placed over hero/team photos so the on-dark text stays legible. */
+  --hero-overlay: rgba(17, 17, 17, 0.75);
+
+  --radius: 1rem; /* cards 16px */
+
+  /* Admin sidebar (kept dark across themes). */
+  --sidebar: #111111;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #c8102e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1f1f1f;
+  --sidebar-accent-foreground: #f5f5f5;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #c8102e;
+
+  /* Chart palette (red-based, with distinct accents for multi-series). */
+  --chart-1: #c8102e;
+  --chart-2: #2563eb;
+  --chart-3: #d97706;
+  --chart-4: #16a34a;
+  --chart-5: #7c3aed;
+
+  --font-display: var(--font-display-next), "Bebas Neue", "Anton", "Oswald",
+    sans-serif;
+  --font-sans: var(--font-sans-next), "Montserrat", "Inter", system-ui,
+    sans-serif;
+}
+
+/* ===========================================================================
+   THEME: fonteta-light — light variant. Keeps the brand red + typography, but
+   the "dark sections" (hero, teams, match center, footer) become light surfaces
+   with dark text instead of black.
+   =========================================================================== */
+[data-theme="fonteta-light"] {
+  --background: #ffffff;
+  --foreground: #111111;
+  --card: #ffffff;
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+
+  --secondary: #f0f0f0;
+  --secondary-foreground: #111111;
+  --muted: #f0f0f0;
+  --muted-foreground: #5a5a5a;
+
+  --border: rgba(17, 17, 17, 0.1);
+  --input-background: #ffffff;
+
+  /* "Dark" sections rendered as light surfaces with dark text. */
+  --surface-dark: #f5f5f5;
+  --surface-dark-2: #ffffff;
+  --on-dark: #111111;
+  --on-dark-muted: rgba(17, 17, 17, 0.6);
+
+  /* Light scrim over hero photos so dark on-dark text stays readable. */
+  --hero-overlay: rgba(245, 245, 245, 0.8);
+}
+
+/* On light surfaces the default `border-white/10` hairlines disappear, so give
+   dark sections a subtle dark border instead when this theme is active. */
+[data-theme="fonteta-light"] .section-dark,
+[data-theme="fonteta-light"] .section-dark * {
+  border-color: rgba(17, 17, 17, 0.1);
+}
+
+/* ===========================================================================
+   THEME: midnight — fully dark, cooler navy-leaning variant.
+   =========================================================================== */
+[data-theme="midnight"] {
+  --background: #0b1020;
+  --foreground: #f5f5f5;
+  --card: #141a2e;
+  --card-foreground: #f5f5f5;
+  --popover: #141a2e;
+  --popover-foreground: #f5f5f5;
+
+  --secondary: #1b2238;
+  --secondary-foreground: #f5f5f5;
+  --muted: #1b2238;
+  --muted-foreground: rgba(245, 245, 245, 0.65);
+
+  --border: rgba(255, 255, 255, 0.1);
+  --input-background: #141a2e;
+
+  --surface-dark: #0b1020;
+  --surface-dark-2: #141a2e;
+  --on-dark: #f5f5f5;
+  --on-dark-muted: rgba(245, 245, 245, 0.6);
+}
+
+/* ===========================================================================
+   THEME: classic — the previous lighter look (Barlow Condensed + Outfit).
+   =========================================================================== */
+[data-theme="classic"] {
+  --background: #ffffff;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+
+  --secondary: #f4f4f5;
+  --secondary-foreground: #111827;
+  --muted: #f4f4f5;
+  --muted-foreground: #6b7280;
+
+  --border: rgba(0, 0, 0, 0.08);
+  --input-background: #f9fafb;
+
+  --surface-dark: #1a1a2e;
+  --surface-dark-2: #2d2d44;
+  --on-dark: #f9fafb;
+  --on-dark-muted: rgba(249, 250, 251, 0.6);
+
+  --radius: 0.75rem;
+
+  --font-display: "Barlow Condensed", sans-serif;
+  --font-sans: "Outfit", system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-ring: var(--ring);
+  --color-surface-dark: var(--surface-dark);
+  --color-surface-dark-2: var(--surface-dark-2);
+  --color-on-dark: var(--on-dark);
+  --color-on-dark-muted: var(--on-dark-muted);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 6px);
+  --radius-lg: calc(var(--radius) - 4px);
+  --radius-xl: calc(var(--radius) - 2px);
+  --radius-2xl: var(--radius);
+  --radius-3xl: calc(var(--radius) + 8px);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    font-size: var(--font-size);
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+}
+
+/* Display headings helper — uppercase, condensed, slight tracking. */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.5px;
+}
+
+/* Subtle dark-section atmosphere: faint noise + vignette over #111. Apply to a
+   dark section root to get the "stadium" feel without heavy gradients. */
+.section-dark {
+  background-color: var(--surface-dark);
+  color: var(--on-dark);
+  position: relative;
+}
+
+/* Thin red diagonal accent stripe, e.g. for hero/match-center decoration. */
+.accent-diagonal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    transparent 62%,
+    var(--primary) 62%,
+    var(--primary) 65%,
+    transparent 65%,
+    transparent 100%
+  );
+  opacity: 0.9;
+}
+
+/* Animated nav underline (used by the site header links). */
+.nav-underline {
+  position: relative;
+}
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.35rem;
+  height: 2px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.nav-underline:hover::after,
+.nav-underline[data-active="true"]::after {
+  transform: scaleX(1);
+}
