@@ -49,9 +49,15 @@ export function calendarFeedUrl(
   return `${base}${calendarFeedPath(scope)}`;
 }
 
+/**
+ * Google Calendar subscribe deep link.
+ * Uses webcal:// in cid (URL-encoded), not base64 — base64 often yields
+ * «Invalid URL» even when the ICS feed itself is valid.
+ * @see https://til.simonwillison.net/ics/google-calendar-ics-subscribe-link
+ */
 export function googleCalendarSubscribeUrl(httpsFeedUrl: string): string {
-  const cid = btoa(httpsFeedUrl);
-  return `https://www.google.com/calendar/render?cid=${encodeURIComponent(cid)}`;
+  const webcal = webcalSubscribeUrl(httpsFeedUrl);
+  return `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}`;
 }
 
 export function webcalSubscribeUrl(httpsFeedUrl: string): string {

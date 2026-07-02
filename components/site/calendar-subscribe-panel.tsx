@@ -180,9 +180,10 @@ export function CalendarSubscribePanel({
         {manualOpen ? (
           <div className="mt-3 space-y-3 text-sm text-on-dark-muted">
             <p>
-              <strong className="text-on-dark">Google (Android):</strong>{" "}
-              Kalender-App → Einstellungen → Kalender hinzufügen → Per URL → Link
-              einfügen.
+              <strong className="text-on-dark">Google (Android / Web):</strong>{" "}
+              Oben «Google Kalender» tippen. Falls eine Fehlermeldung erscheint:
+              Kalender → Einstellungen → Kalender hinzufügen → Per URL → den
+              kopierten https-Link einfügen.
             </p>
             <p>
               <strong className="text-on-dark">Apple (iPhone):</strong> Am
