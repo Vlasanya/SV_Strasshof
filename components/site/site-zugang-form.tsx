@@ -1,16 +1,38 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Lock } from "lucide-react";
 
+function safeNextPath(raw: string | null): string {
+  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  return "/";
+}
+
 export function SiteZugangForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/";
+  const next = safeNextPath(searchParams.get("next"));
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/site-access", { credentials: "same-origin" })
+      .then((res) => res.json())
+      .then((data: { ok?: boolean }) => {
+        if (!cancelled && data.ok) {
+          window.location.replace(next);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setChecking(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [next]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,6 +42,7 @@ export function SiteZugangForm() {
     try {
       const res = await fetch("/api/site-access", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
@@ -29,13 +52,21 @@ export function SiteZugangForm() {
         return;
       }
 
-      router.replace(next.startsWith("/") ? next : "/");
-      router.refresh();
+      // Full navigation so proxy.ts sees the new cookie immediately.
+      window.location.replace(next);
     } catch {
       setError("Verbindungsfehler. Bitte später erneut versuchen.");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (checking) {
+    return (
+      <section className="section-dark min-h-[70vh] flex items-center justify-center">
+        <p className="text-on-dark-muted text-sm">Laden…</p>
+      </section>
+    );
   }
 
   return (

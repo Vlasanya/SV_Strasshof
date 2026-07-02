@@ -1,7 +1,31 @@
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { SiteZugangForm } from "@/components/site/site-zugang-form";
+import {
+  hasSiteAccessCookie,
+  siteAccessCookieName,
+} from "@/lib/site-access";
 
-export default function SiteZugangPage() {
+function safeNextPath(raw?: string | null): string {
+  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  return "/";
+}
+
+export default async function SiteZugangPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const params = await searchParams;
+  const next = safeNextPath(params?.next);
+  const cookieStore = await cookies();
+  const token = cookieStore.get(siteAccessCookieName())?.value;
+
+  if (hasSiteAccessCookie(token)) {
+    redirect(next);
+  }
+
   return (
     <Suspense
       fallback={

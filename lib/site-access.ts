@@ -30,15 +30,19 @@ export function siteAccessAppliesToHost(host: string): boolean {
 }
 
 export function hasSiteAccess(request: NextRequest): boolean {
+  return hasSiteAccessCookie(request.cookies.get(COOKIE_NAME)?.value);
+}
+
+export function hasSiteAccessCookie(cookieValue: string | undefined | null): boolean {
   const password = siteAccessPassword();
   if (!password) return true;
-
-  const cookie = request.cookies.get(COOKIE_NAME)?.value;
-  if (!cookie) return false;
+  if (!cookieValue) return false;
 
   const expected = siteAccessToken(password);
+  if (cookieValue.length !== expected.length) return false;
+
   try {
-    return timingSafeEqual(Buffer.from(cookie), Buffer.from(expected));
+    return timingSafeEqual(Buffer.from(cookieValue), Buffer.from(expected));
   } catch {
     return false;
   }

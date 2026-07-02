@@ -1,9 +1,30 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import {
+  hasSiteAccessCookie,
   isSiteAccessConfigured,
   siteAccessCookieName,
   siteAccessToken,
 } from "@/lib/site-access";
+
+function cookieOptions() {
+  return {
+    httpOnly: true,
+    secure:
+      process.env.VERCEL === "1" || process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+  };
+}
+
+export async function GET() {
+  const cookieStore = await cookies();
+  const ok = hasSiteAccessCookie(
+    cookieStore.get(siteAccessCookieName())?.value,
+  );
+  return NextResponse.json({ ok });
+}
 
 export async function POST(request: Request) {
   if (!isSiteAccessConfigured()) {
@@ -24,12 +45,10 @@ export async function POST(request: Request) {
   }
 
   const response = NextResponse.json({ ok: true });
-  response.cookies.set(siteAccessCookieName(), siteAccessToken(expected), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-  });
+  response.cookies.set(
+    siteAccessCookieName(),
+    siteAccessToken(expected),
+    cookieOptions(),
+  );
   return response;
 }
