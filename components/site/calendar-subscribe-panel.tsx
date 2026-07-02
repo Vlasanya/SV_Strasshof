@@ -1,33 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import QRCode from "react-qr-code";
-import {
-  CalendarPlus,
-  ChevronDown,
-  Copy,
-  Smartphone,
-} from "lucide-react";
+import { CalendarPlus, ChevronDown, Copy, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import {
   calendarFeedUrl,
-  detectSubscribePlatform,
-  googleCalendarSubscribeUrl,
+  calendarProviderLabel,
+  calendarSubscribeUrl,
+  detectCalendarProvider,
   teamFilterToSubscribeScope,
-  webcalSubscribeUrl,
-  type SubscribePlatform,
+  type CalendarProvider,
 } from "@/lib/calendar-subscribe";
 import type { Team } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-function actionButtonClass(primary = false) {
-  return cn(
-    "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors",
-    primary
-      ? "bg-primary text-primary-foreground hover:brightness-90"
-      : "border border-white/20 text-on-dark hover:border-primary/50 hover:text-primary",
-  );
-}
 
 export function CalendarSubscribePanel({
   teams,
@@ -39,13 +24,12 @@ export function CalendarSubscribePanel({
   clubName: string;
 }) {
   const [origin, setOrigin] = useState("");
-  const [platform, setPlatform] = useState<SubscribePlatform>("other");
-  const [showQr, setShowQr] = useState(false);
+  const [provider, setProvider] = useState<CalendarProvider>("google");
   const [manualOpen, setManualOpen] = useState(false);
 
   useEffect(() => {
     setOrigin(window.location.origin);
-    setPlatform(detectSubscribePlatform());
+    setProvider(detectCalendarProvider());
   }, []);
 
   const scope = useMemo(
@@ -54,8 +38,10 @@ export function CalendarSubscribePanel({
   );
 
   const feedUrl = origin ? calendarFeedUrl(origin, scope) : "";
-  const googleUrl = feedUrl ? googleCalendarSubscribeUrl(feedUrl) : "";
-  const appleUrl = feedUrl ? webcalSubscribeUrl(feedUrl) : "";
+  const subscribeUrl = feedUrl ? calendarSubscribeUrl(feedUrl, provider) : "";
+  const providerName = calendarProviderLabel(provider);
+  const isLocalhost =
+    origin.includes("localhost") || origin.includes("127.0.0.1");
 
   const scopeHint =
     scope.kind === "all"
@@ -85,82 +71,37 @@ export function CalendarSubscribePanel({
             <h2 className="font-display text-lg font-bold">Kalender aufs Handy</h2>
           </div>
           <p className="mt-1 text-sm text-on-dark-muted">
-            Termine automatisch in Google Kalender oder Apple Kalender —{" "}
+            Termine automatisch in {providerName} —{" "}
             <span className="text-on-dark">{scopeHint}</span>.
           </p>
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {platform === "ios" && appleUrl ? (
-          <a href={appleUrl} className={actionButtonClass(true)}>
-            <CalendarPlus className="h-4 w-4" />
-            In Apple Kalender öffnen
-          </a>
-        ) : platform === "android" && googleUrl ? (
+      <div className="mt-4">
+        {subscribeUrl ? (
           <a
-            href={googleUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={actionButtonClass(true)}
+            href={subscribeUrl}
+            {...(provider === "google"
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
+            className={cn(
+              "inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5",
+              "text-sm font-semibold transition-colors",
+              "bg-primary text-primary-foreground hover:brightness-90",
+            )}
           >
             <CalendarPlus className="h-4 w-4" />
-            In Google Kalender öffnen
+            In {providerName} abonnieren
           </a>
         ) : null}
 
-        {googleUrl ? (
-          <a
-            href={googleUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={actionButtonClass(platform !== "android")}
-          >
-            Google Kalender
-          </a>
-        ) : null}
-
-        {appleUrl ? (
-          <a href={appleUrl} className={actionButtonClass(platform !== "ios")}>
-            Apple Kalender
-          </a>
-        ) : null}
-
-        <button
-          type="button"
-          onClick={copyLink}
-          disabled={!feedUrl}
-          className={actionButtonClass()}
-        >
-          <Copy className="h-4 w-4" />
-          Link kopieren
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setShowQr((v) => !v)}
-          disabled={!feedUrl}
-          className={actionButtonClass()}
-        >
-          QR-Code
-        </button>
-      </div>
-
-      {showQr && feedUrl ? (
-        <div className="mt-4 flex flex-col items-center gap-3 rounded-lg border border-white/10 bg-white p-4 w-fit mx-auto sm:mx-0">
-          <QRCode value={feedUrl} size={160} />
-          <p className="text-xs text-muted-foreground text-center max-w-[200px]">
-            Mit der Handy-Kamera scannen — Kalender wird abonniert und aktualisiert
-            sich automatisch.
+        {isLocalhost ? (
+          <p className="mt-3 text-xs text-on-dark-muted">
+            Auf localhost funktioniert Google Kalender nicht — bitte die
+            Live-Seite verwenden oder Apple Kalender (Safari) testen.
           </p>
-        </div>
-      ) : null}
-
-      {feedUrl ? (
-        <p className="mt-3 text-xs text-on-dark-muted break-all">
-          {feedUrl}
-        </p>
-      ) : null}
+        ) : null}
+      </div>
 
       <div className="mt-4 border-t border-white/10 pt-3">
         <button
@@ -168,7 +109,7 @@ export function CalendarSubscribePanel({
           onClick={() => setManualOpen((v) => !v)}
           className="flex w-full items-center justify-between gap-2 text-left text-sm font-medium text-on-dark-muted hover:text-on-dark"
         >
-          Manuell einrichten
+          Andere App oder manuell einrichten
           <ChevronDown
             className={cn(
               "h-4 w-4 shrink-0 transition-transform",
@@ -180,20 +121,26 @@ export function CalendarSubscribePanel({
         {manualOpen ? (
           <div className="mt-3 space-y-3 text-sm text-on-dark-muted">
             <p>
-              <strong className="text-on-dark">Google (Android / Web):</strong>{" "}
-              Oben «Google Kalender» tippen. Falls eine Fehlermeldung erscheint:
-              Kalender → Einstellungen → Kalender hinzufügen → Per URL → den
-              kopierten https-Link einfügen.
+              Link für Google Kalender oder Apple Kalender (Einstellungen → Per
+              URL):
             </p>
-            <p>
-              <strong className="text-on-dark">Apple (iPhone):</strong> Am
-              einfachsten oben «Apple Kalender» tippen (Safari). Alternativ:
-              Einstellungen → Kalender → Account hinzufügen → Anderer
-              CalDAV-Account → Abonnierten Kalender hinzufügen.
-            </p>
+            {feedUrl ? (
+              <p className="text-xs break-all rounded-lg border border-white/10 bg-surface-dark-2 px-3 py-2 text-on-dark">
+                {feedUrl}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              onClick={copyLink}
+              disabled={!feedUrl}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline disabled:opacity-50"
+            >
+              <Copy className="h-4 w-4" />
+              Link kopieren
+            </button>
             <p className="text-xs">
               Kalender von {clubName} aktualisiert sich alle paar Stunden
-              automatisch — kein erneutes Herunterladen nötig.
+              automatisch.
             </p>
           </div>
         ) : null}

@@ -64,12 +64,27 @@ export function webcalSubscribeUrl(httpsFeedUrl: string): string {
   return httpsFeedUrl.replace(/^https?:\/\//i, "webcal://");
 }
 
-export type SubscribePlatform = "ios" | "android" | "other";
+export type CalendarProvider = "google" | "apple";
 
-export function detectSubscribePlatform(): SubscribePlatform {
-  if (typeof navigator === "undefined") return "other";
+/** Safari → Apple Kalender; Chrome and other browsers → Google Kalender. */
+export function detectCalendarProvider(): CalendarProvider {
+  if (typeof navigator === "undefined") return "google";
   const ua = navigator.userAgent;
-  if (/iPhone|iPad|iPod/i.test(ua)) return "ios";
-  if (/Android/i.test(ua)) return "android";
-  return "other";
+  const isSafari =
+    /Safari/i.test(ua) &&
+    !/Chrome|Chromium|CriOS|Edg|EdgiOS|OPR|OPiOS|FxiOS/i.test(ua);
+  return isSafari ? "apple" : "google";
+}
+
+export function calendarSubscribeUrl(
+  httpsFeedUrl: string,
+  provider: CalendarProvider,
+): string {
+  return provider === "apple"
+    ? webcalSubscribeUrl(httpsFeedUrl)
+    : googleCalendarSubscribeUrl(httpsFeedUrl);
+}
+
+export function calendarProviderLabel(provider: CalendarProvider): string {
+  return provider === "apple" ? "Apple Kalender" : "Google Kalender";
 }
