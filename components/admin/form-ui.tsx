@@ -181,7 +181,7 @@ export function SelectField({
         `}
       >
         <option value="" disabled>
-          Selecciona una opción...
+          Bitte wählen...
         </option>
 
         {options.map((item) => (
@@ -273,7 +273,7 @@ function SubmitButton({ label }: { label: string }) {
       disabled={pending}
       className="inline-flex items-center gap-2 bg-primary hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
     >
-      {pending ? " Publicando..." : label}
+      {pending ? " Wird veröffentlicht..." : label}
     </button>
   );
 }
@@ -282,7 +282,7 @@ export function AdminForm({
   action,
   children,
   cancelHref,
-  submitLabel = "Guardar",
+  submitLabel = "Speichern",
   successMessage,
 }: {
   action: (prev: ActionResult, formData: FormData) => Promise<ActionResult>;
@@ -310,7 +310,7 @@ export function AdminForm({
 
     required.forEach((field) => {
       if (!field.value.trim()) {
-        newErrors[field.name] = "Este campo es obligatorio";
+        newErrors[field.name] = "Dieses Feld ist erforderlich";
       }
     });
 
@@ -352,7 +352,7 @@ export function AdminForm({
             href={cancelHref}
             className="text-sm font-medium text-muted-foreground hover:text-foreground px-4 py-2.5"
           >
-            Cancelar
+            Abbrechen
           </Link>
         )}
       </div>
@@ -363,7 +363,7 @@ export function AdminForm({
 export function DeleteButton({
   action,
   id,
-  confirmText = "¿Eliminar este elemento?",
+  confirmText = "Dieses Element löschen?",
 }: {
   action: (formData: FormData) => void;
   id: number;
@@ -375,9 +375,9 @@ export function DeleteButton({
   function onClick() {
     void (async () => {
       const ok = await confirm({
-        title: "Eliminar",
+        title: "Löschen",
         description: confirmText,
-        confirmLabel: "Eliminar",
+        confirmLabel: "Löschen",
         tone: "danger",
       });
       if (ok) formRef.current?.requestSubmit();
@@ -391,7 +391,7 @@ export function DeleteButton({
         type="button"
         onClick={onClick}
         className="p-1.5 rounded-lg hover:bg-red-50 transition-colors text-muted-foreground hover:text-red-600"
-        aria-label="Eliminar"
+        aria-label="Löschen"
       >
         <TrashIcon />
       </button>

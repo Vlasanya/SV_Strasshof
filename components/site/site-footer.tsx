@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Shield } from "lucide-react";
 import { NAV_LINKS, type ClubInfo } from "@/lib/config";
 import { ContactPhoneActions } from "@/components/site/contact-phone-actions";
+import { phoneDisplayList, whatsappWaMeNumber } from "@/lib/phone";
 
 export function SiteFooter({
   club,
@@ -32,12 +33,13 @@ export function SiteFooter({
               </span>
             </div>
             <p className="text-sm text-on-dark-muted leading-relaxed max-w-xs">
-              Fútbol base y deporte comunitario. Formando jugadores y personas.
+              Fußballverein in Niederösterreich. Gemeinschaft, Fairplay und
+              Nachwuchsförderung.
             </p>
           </div>
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-on-dark-muted mb-4">
-              Navegación
+              Navigation
             </h4>
             <ul className="space-y-2.5">
               {NAV_LINKS.map((link) => (
@@ -54,7 +56,7 @@ export function SiteFooter({
           </div>
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-on-dark-muted mb-4">
-              Contacto
+              Kontakt
             </h4>
             <address className="not-italic text-sm text-on-dark/80 space-y-1.5">
               {club.address && (
@@ -83,22 +85,14 @@ export function SiteFooter({
               )}
               {club.phone && (
                 <div className="mt-3 space-y-1.5">
-                  {club.phone
-                    .split(/\s*[-,\n]\s*/g)
-                    .map((phon) => phon.trim())
-                    .filter(Boolean)
-                    .map((phon) => {
-                      const whatsappNumber = phon.replace(/\D/g, "");
-
-                      return (
-                        <div key={phon} className="flex gap-3">
-                          <ContactPhoneActions
-                            phone={phon}
-                            whatsappNumber={whatsappNumber}
-                          />
-                        </div>
-                      );
-                    })}
+                  {phoneDisplayList(club.phone).map((phon) => (
+                    <div key={phon} className="flex gap-3">
+                      <ContactPhoneActions
+                        phone={phon}
+                        whatsappNumber={whatsappWaMeNumber(phon)}
+                      />
+                    </div>
+                  ))}
                 </div>
               )}
             </address>
@@ -106,21 +100,20 @@ export function SiteFooter({
         </div>
         <div className="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-on-dark-muted">
           <p>
-            © {new Date().getFullYear()} {club.name}. Todos los derechos
-            reservados.
+            © {new Date().getFullYear()} {club.name}. Alle Rechte vorbehalten.
           </p>
           <div className="flex gap-5">
             <Link
               href="/datenschutz"
               className="hover:text-primary transition-colors"
             >
-              Privacidad
+              Datenschutz
             </Link>
             <Link
               href="/impressum"
               className="hover:text-primary transition-colors"
             >
-              Aviso legal
+              Impressum
             </Link>
           </div>
         </div>

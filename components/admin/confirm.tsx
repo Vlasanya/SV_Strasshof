@@ -79,7 +79,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
           />
           <div className="relative w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl">
             <h2 className="font-display text-lg font-bold uppercase tracking-tight text-foreground">
-              {opts?.title ?? "Confirmar"}
+              {opts?.title ?? "Bestätigen"}
             </h2>
             {opts?.description && (
               <p className="mt-1.5 text-sm text-muted-foreground">
@@ -92,7 +92,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
                 onClick={() => settle(false)}
                 className="rounded-xl px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
               >
-                {opts?.cancelLabel ?? "Cancelar"}
+                {opts?.cancelLabel ?? "Abbrechen"}
               </button>
               <button
                 ref={confirmBtnRef}
@@ -104,7 +104,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
                     : "rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
                 }
               >
-                {opts?.confirmLabel ?? "Confirmar"}
+                {opts?.confirmLabel ?? "Bestätigen"}
               </button>
             </div>
           </div>

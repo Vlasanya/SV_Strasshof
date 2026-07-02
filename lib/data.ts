@@ -5,6 +5,8 @@ import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { CLUB, type ClubInfo } from "@/lib/config";
 import type {
   AdAction,
+  ClubEvent,
+  JoinInquiry,
   MerchItem,
   NewsArticle,
   SiteSettings,
@@ -302,6 +304,35 @@ export async function getContactMessages({
   }
 }
 
+export async function getJoinInquiries({
+  limit = 30,
+  offset = 0,
+  handled,
+  sort = "desc",
+}: {
+  limit?: number;
+  offset?: number;
+  handled?: boolean;
+  sort?: "asc" | "desc";
+} = {}): Promise<{ data: JoinInquiry[]; count: number }> {
+  if (!hasSupabaseEnv()) return { data: [], count: 0 };
+  try {
+    const supabase = await createSupabaseServerClient();
+    let query = supabase
+      .schema("app")
+      .from("join_inquiry")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: sort === "asc" })
+      .range(offset, offset + limit - 1);
+    if (typeof handled === "boolean") query = query.eq("handled", handled);
+    const { data, error, count } = await query;
+    if (error || !data) return { data: [], count: 0 };
+    return { data: data as JoinInquiry[], count: count ?? 0 };
+  } catch {
+    return { data: [], count: 0 };
+  }
+}
+
 export async function getSponsorshipPlans(): Promise<SponsorshipPlan[]> {
   if (!hasSupabaseEnv()) return [];
   try {
@@ -365,6 +396,185 @@ export async function getAdActionById(id: number): Promise<AdAction | null> {
       .eq("id", id)
       .maybeSingle();
     return (data as AdAction) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+type ClubEventRow = ClubEvent & {
+  team: { name: string; slug: string } | null;
+};
+
+function mapClubEvent(row: ClubEventRow): ClubEvent {
+  const { team, ...event } = row;
+  return { ...event, team: team ?? null };
+}
+
+function applyClubEventFilters<
+  Q extends {
+    eq: (col: string, val: unknown) => Q;
+    is: (col: string, val: null) => Q;
+    or: (filters: string) => Q;
+    gte: (col: string, val: string) => Q;
+    lt: (col: string, val: string) => Q;
+    lte: (col: string, val: string) => Q;
+  },
+>(
+  query: Q,
+  {
+    teamId,
+    teamIds,
+    clubWideOnly,
+    includeClubWide,
+    publishedOnly,
+    upcomingOnly,
+    pastOnly,
+    from,
+    before,
+    to,
+  }: {
+    teamId?: number | null;
+    teamIds?: number[];
+    clubWideOnly?: boolean;
+    includeClubWide?: boolean;
+    publishedOnly?: boolean;
+    upcomingOnly?: boolean;
+    pastOnly?: boolean;
+    from?: string;
+    /** Exclusive upper bound (starts_at < before) */
+    before?: string;
+    to?: string;
+  },
+): Q {
+  let q = query;
+  if (publishedOnly) q = q.eq("published", true);
+  if (clubWideOnly) {
+    q = q.is("team_id", null);
+  } else if (teamIds && teamIds.length > 0) {
+    const parts = teamIds.map((id) => `team_id.eq.${id}`);
+    if (includeClubWide) parts.push("team_id.is.null");
+    q = q.or(parts.join(","));
+  } else if (typeof teamId === "number") {
+    if (includeClubWide) {
+      q = q.or(`team_id.eq.${teamId},team_id.is.null`);
+    } else {
+      q = q.eq("team_id", teamId);
+    }
+  } else if (teamId === null) {
+    q = q.is("team_id", null);
+  }
+
+  const now = new Date().toISOString();
+  if (upcomingOnly) q = q.gte("starts_at", now);
+  if (pastOnly) q = q.lt("starts_at", now);
+  if (from) q = q.gte("starts_at", from);
+  if (before) q = q.lt("starts_at", before);
+  if (to) q = q.lte("starts_at", to);
+  return q;
+}
+
+export async function getClubEvents({
+  teamId,
+  teamIds,
+  clubWideOnly = false,
+  includeClubWide = false,
+  publishedOnly = true,
+  upcomingOnly = false,
+  pastOnly = false,
+  from,
+  before,
+  to,
+  sortAscending,
+  limit = 200,
+}: {
+  teamId?: number | null;
+  teamIds?: number[];
+  clubWideOnly?: boolean;
+  includeClubWide?: boolean;
+  publishedOnly?: boolean;
+  upcomingOnly?: boolean;
+  pastOnly?: boolean;
+  from?: string;
+  before?: string;
+  to?: string;
+  sortAscending?: boolean;
+  limit?: number;
+} = {}): Promise<ClubEvent[]> {
+  if (!hasSupabaseEnv()) return [];
+  try {
+    const supabase = await createSupabaseServerClient();
+    const ascending =
+      sortAscending ??
+      (upcomingOnly ? true : pastOnly ? false : false);
+
+    const filterOpts = {
+      teamId,
+      teamIds,
+      clubWideOnly,
+      includeClubWide,
+      publishedOnly,
+      upcomingOnly,
+      pastOnly,
+      from,
+      before,
+      to,
+    };
+
+    let query = applyClubEventFilters(
+      supabase
+        .schema("app")
+        .from("club_event")
+        .select("*, team(name, slug)")
+        .order("starts_at", { ascending })
+        .limit(limit),
+      filterOpts,
+    );
+
+    const { data, error } = await query;
+    if (error) {
+      const fallback = await applyClubEventFilters(
+        supabase
+          .schema("app")
+          .from("club_event")
+          .select("*")
+          .order("starts_at", { ascending })
+          .limit(limit),
+        filterOpts,
+      );
+      if (fallback.error || !fallback.data) return [];
+      return (fallback.data as ClubEvent[]).map((row) => ({
+        ...row,
+        team: null,
+      }));
+    }
+    if (!data) return [];
+    return (data as ClubEventRow[]).map(mapClubEvent);
+  } catch {
+    return [];
+  }
+}
+
+export async function getClubEventById(id: number): Promise<ClubEvent | null> {
+  if (!hasSupabaseEnv()) return null;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase
+      .schema("app")
+      .from("club_event")
+      .select("*, team(name, slug)")
+      .eq("id", id)
+      .maybeSingle();
+    if (error || !data) {
+      const fallback = await supabase
+        .schema("app")
+        .from("club_event")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+      if (fallback.error || !fallback.data) return null;
+      return { ...(fallback.data as ClubEvent), team: null };
+    }
+    return mapClubEvent(data as ClubEventRow);
   } catch {
     return null;
   }

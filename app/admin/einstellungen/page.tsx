@@ -39,22 +39,21 @@ export default async function AdminSettingsPage() {
     <div className="space-y-12 max-w-2xl">
       <section>
         <h2 className="font-display text-lg font-bold uppercase tracking-tight text-foreground mb-1">
-          Marca e inicio
+          Marke & Startseite
         </h2>
         <p className="text-sm text-muted-foreground mb-4">
-          Personaliza el logo, la imagen de portada y los textos de la página de
-          inicio.
+          Logo, Titelbild und Texte der Startseite anpassen.
         </p>
         <BrandingSettingsForm settings={settings} />
       </section>
 
       <section>
         <h2 className="font-display text-lg font-bold uppercase tracking-tight text-foreground mb-1">
-          Datos del club
+          Vereinsdaten
         </h2>
         <p className="text-sm text-muted-foreground mb-4">
-          Corrige la información de contacto y redes sociales que llega de la
-          federación cuando esté mal o desactualizada.
+          Kontaktdaten und Social Media korrigieren, wenn Verbandsdaten falsch
+          oder veraltet sind.
         </p>
         <ClubInfoSettingsForm club={club} settings={settings} />
       </section>

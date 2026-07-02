@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:join-inquiry": "node scripts/apply-migration.mjs join_inquiry",
+    "db:club-event": "node scripts/apply-migration.mjs club_event",
+    "db:migrate": "node scripts/apply-migration.mjs",
+    "db:seed-trainings": "node scripts/seed-team-trainings.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
@@ -33,6 +37,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "pg": "^8.22.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

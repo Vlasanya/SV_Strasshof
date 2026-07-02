@@ -9,9 +9,11 @@ import { compareCategoryByAge } from "@/lib/utils";
 export function TeamsGrid({
   teams,
   logoUrl,
+  teamLogoBySlug = {},
 }: {
   teams: Team[];
   logoUrl?: string | null;
+  teamLogoBySlug?: Record<string, string>;
 }) {
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -47,7 +49,8 @@ export function TeamsGrid({
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
         {filtered.map((team) => {
-          const image = team.photo_url || logoUrl;
+          const image =
+            teamLogoBySlug[team.slug] || team.photo_url || logoUrl;
           return (
             <Link
               href={`/mannschaften/${team.slug}`}

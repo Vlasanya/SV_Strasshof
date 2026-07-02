@@ -6,10 +6,9 @@ import type { ClubInfo } from "@/lib/config";
 import type { SiteSettings } from "@/lib/types";
 
 /**
- * Overrides for the club data that normally comes from the federation (FFCV),
- * which is sometimes broken/outdated. Leaving a field empty falls back to the
- * federation value. `club` is the currently-resolved info (shown as the
- * placeholder); `settings` holds the raw overrides (prefilled into the inputs).
+ * Overrides for club data that may be broken or outdated. Leaving a field empty
+ * falls back to the federation value. `club` is the currently-resolved info
+ * (shown as placeholder); `settings` holds the raw overrides.
  */
 export function ClubInfoSettingsForm({
   club,
@@ -20,40 +19,40 @@ export function ClubInfoSettingsForm({
 }) {
   const v = (k: string) => settings[k] ?? "";
   const ph = (value: string | null, example: string) =>
-    value && value.trim() ? `Actual: ${value}` : example;
+    value && value.trim() ? `Aktuell: ${value}` : example;
 
   return (
     <AdminForm
       action={upsertClubInfoSettings}
-      submitLabel="Guardar datos del club"
-      successMessage="Datos del club actualizados."
+      submitLabel="Vereinsdaten speichern"
+      successMessage="Vereinsdaten aktualisiert."
     >
       <TextField
-        label="Nombre del club"
+        label="Vereinsname"
         name="club_name"
         defaultValue={v("club_name")}
-        placeholder={ph(club.name, "U.D. Fonteta")}
+        placeholder={ph(club.name, "SV Strasshof")}
       />
       <TextField
-        label="Dirección"
+        label="Adresse"
         name="club_address"
         defaultValue={v("club_address")}
-        placeholder={ph(club.address, "Calle Palancia, 2 bajo, Valencia")}
+        placeholder={ph(club.address, "Hauptstraße 1, 2231 Strasshof")}
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <TextField
-          label="Email"
+          label="E-Mail"
           name="club_email"
           type="email"
           defaultValue={v("club_email")}
-          placeholder={ph(club.email, "udfonteta@gmail.com")}
+          placeholder={ph(club.email, "office@verein.at")}
         />
         <TextField
-          label="Teléfono(s)"
+          label="Telefon"
           name="club_phone"
           defaultValue={v("club_phone")}
-          placeholder={ph(club.phone, "686496111 - 650418141")}
-          hint="Puedes separar varios números con guiones."
+          placeholder={ph(club.phone, "0664 1234567")}
+          hint="Mehrere Nummern mit Bindestrich trennen."
         />
       </div>
       <TextField
@@ -62,28 +61,28 @@ export function ClubInfoSettingsForm({
         defaultValue={v("club_instagram")}
         placeholder={ph(
           club.instagram ? `@${club.instagram}` : null,
-          "udfonteta o https://www.instagram.com/udfonteta/",
+          "verein oder https://www.instagram.com/verein/",
         )}
-        hint="Pega el usuario o la URL completa; se normaliza automáticamente."
+        hint="Benutzername oder vollständige URL — wird automatisch normalisiert."
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <TextField
           label="Facebook"
           name="club_facebook"
           defaultValue={v("club_facebook")}
-          placeholder={ph(club.facebook, "URL o usuario")}
+          placeholder={ph(club.facebook, "URL oder Benutzername")}
         />
         <TextField
-          label="Web"
+          label="Website"
           name="club_web"
           defaultValue={v("club_web")}
           placeholder={ph(club.web, "https://...")}
         />
       </div>
       <p className="text-xs text-muted-foreground">
-        Estos datos provienen de la federación (FFCV) y pueden estar
-        desactualizados. Lo que escribas aquí tiene prioridad en la web; deja un
-        campo vacío para volver al dato de la federación.
+        Diese Daten können vom Verband veraltet sein. Was du hier einträgst, hat
+        auf der Website Vorrang; leer lassen, um wieder den Verbandswert zu
+        verwenden.
       </p>
     </AdminForm>
   );

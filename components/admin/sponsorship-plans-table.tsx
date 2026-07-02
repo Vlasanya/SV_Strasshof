@@ -18,7 +18,7 @@ export function SponsorshipPlansTable({ plans }: { plans: SponsorshipPlan[] }) {
       items={plans}
       onReorder={reorderSponsorshipPlans}
       emptyColSpan={4}
-      emptyMessage="No hay planes todavía."
+      emptyMessage="Noch keine Pläne."
       columns={[
         {
           header: "Plan",
@@ -26,7 +26,7 @@ export function SponsorshipPlansTable({ plans }: { plans: SponsorshipPlan[] }) {
           cell: (p) => p.name,
         },
         {
-          header: "Precio",
+          header: "Preis",
           cellClassName: `${tdClass} font-semibold text-foreground whitespace-nowrap`,
           cell: (p) => (
             <>
@@ -36,14 +36,16 @@ export function SponsorshipPlansTable({ plans }: { plans: SponsorshipPlan[] }) {
           ),
         },
         {
-          header: "Características",
+          header: "Leistungen",
           headerClassName: "text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden sm:table-cell",
           cellClassName: `${tdClass} text-muted-foreground hidden sm:table-cell`,
-          cell: (p) => `${p.features.length} ítems`,
+          cell: (p) => `${p.features.length} Punkte`,
         },
         {
-          header: "Destacado",
-          cell: (p) => <StatusBadge active={p.highlighted} onLabel="Sí" offLabel="No" />,
+          header: "Hervorgehoben",
+          cell: (p) => (
+            <StatusBadge active={p.highlighted} onLabel="Ja" offLabel="Nein" />
+          ),
         },
       ]}
       renderActions={(p) => (
@@ -51,7 +53,7 @@ export function SponsorshipPlansTable({ plans }: { plans: SponsorshipPlan[] }) {
           <Link
             href={`/admin/patrocinio/planes/${p.id}/edit`}
             className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-            aria-label="Editar"
+            aria-label="Bearbeiten"
           >
             <Pencil className="h-3.5 w-3.5" />
           </Link>

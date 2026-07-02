@@ -8,9 +8,9 @@ export function AdActionForm({ action }: { action?: AdAction }) {
   return (
     <AdminForm action={upsertAdAction} cancelHref="/admin/patrocinio">
       {action && <input type="hidden" name="id" value={action.id} />}
-      <TextField label="Nombre" name="name" required defaultValue={action?.name} />
-      <TextField label="Nota" name="note" defaultValue={action?.note} placeholder="p. ej. por equipo" />
-      <TextField label="Precio (€)" name="price" type="number" defaultValue={action?.price} />
+      <TextField label="Name" name="name" required defaultValue={action?.name} />
+      <TextField label="Hinweis" name="note" defaultValue={action?.note} placeholder="z. B. pro Mannschaft" />
+      <TextField label="Preis (€)" name="price" type="number" defaultValue={action?.price} />
     </AdminForm>
   );
 }

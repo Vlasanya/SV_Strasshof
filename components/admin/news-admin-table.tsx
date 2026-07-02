@@ -27,18 +27,18 @@ function InstagramButton({ id }: { id: number }) {
   function publish() {
     void (async () => {
       const ok = await confirm({
-        title: "Publicar en Instagram",
-        description: "¿Publicar esta noticia en Instagram?",
-        confirmLabel: "Publicar",
+        title: "Auf Instagram veröffentlichen",
+        description: "Diesen Beitrag auf Instagram veröffentlichen?",
+        confirmLabel: "Veröffentlichen",
       });
       if (!ok) return;
       start(async () => {
         const res = await postNewsToInstagram(id);
         if (res.ok) {
           setDone(true);
-          toast.success("Publicado en Instagram");
+          toast.success("Auf Instagram veröffentlicht");
         } else {
-          toast.error(res.error ?? "No se pudo publicar");
+          toast.error(res.error ?? "Veröffentlichen fehlgeschlagen");
         }
       });
     })();
@@ -50,8 +50,8 @@ function InstagramButton({ id }: { id: number }) {
       onClick={publish}
       disabled={pending || done}
       className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground disabled:opacity-50"
-      aria-label="Publicar en Instagram"
-      title={done ? "Publicado en Instagram" : "Publicar en Instagram"}
+      aria-label="Auf Instagram veröffentlichen"
+      title={done ? "Auf Instagram veröffentlicht" : "Auf Instagram veröffentlichen"}
     >
       <Share2 className="w-3.5 h-3.5" />
     </button>
@@ -86,8 +86,8 @@ export function NewsAdminTable({ news }: { news: NewsArticle[] }) {
   }, [news, filter]);
 
   const tabs: { id: StatusFilter; label: string; count: number }[] = [
-    { id: "all", label: "Todas", count: counts.all },
-    { id: "published", label: "Publicadas", count: counts.published },
+    { id: "all", label: "Alle", count: counts.all },
+    { id: "published", label: "Veröffentlicht", count: counts.published },
   ];
 
   return (
@@ -124,9 +124,9 @@ export function NewsAdminTable({ news }: { news: NewsArticle[] }) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40">
-              <th className={thClass}>Título</th>
-              <th className={`${thClass} hidden sm:table-cell`}>Categoría</th>
-              <th className={`${thClass} hidden md:table-cell`}>Fecha</th>
+              <th className={thClass}>Titel</th>
+              <th className={`${thClass} hidden sm:table-cell`}>Kategorie</th>
+              <th className={`${thClass} hidden md:table-cell`}>Datum</th>
 
               <th className={thClass}></th>
             </tr>
@@ -162,7 +162,7 @@ export function NewsAdminTable({ news }: { news: NewsArticle[] }) {
                     <Link
                       href={`/admin/news/${row.id}/edit`}
                       className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
-                      aria-label="Editar"
+                      aria-label="Bearbeiten"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </Link>
@@ -177,7 +177,7 @@ export function NewsAdminTable({ news }: { news: NewsArticle[] }) {
                   colSpan={5}
                   className="px-4 py-10 text-center text-muted-foreground"
                 >
-                  No hay noticias en esta vista.
+                  Keine Beiträge in dieser Ansicht.
                 </td>
               </tr>
             )}

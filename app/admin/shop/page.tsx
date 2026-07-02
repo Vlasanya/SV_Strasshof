@@ -21,20 +21,20 @@ export default async function AdminMerchPage() {
     <div>
       <ListToolbar
         count={items.length}
-        noun="productos"
+        noun="Produkte"
         addHref="/admin/shop/new"
-        addLabel="Nuevo producto"
+        addLabel="Neues Produkt"
       />
       <div className={tableWrap}>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40">
-              <th className={thClass}>Producto</th>
-              <th className={`${thClass} hidden sm:table-cell`}>Categoría</th>
-              <th className={thClass}>Precio</th>
-              <th className={`${thClass} hidden md:table-cell`}>Tallas</th>
-              <th className={thClass}>Stock</th>
-              <th className={thClass}>Posición</th>
+              <th className={thClass}>Produkt</th>
+              <th className={`${thClass} hidden sm:table-cell`}>Kategorie</th>
+              <th className={thClass}>Preis</th>
+              <th className={`${thClass} hidden md:table-cell`}>Größen</th>
+              <th className={thClass}>Lager</th>
+              <th className={thClass}>Position</th>
               <th className={thClass}></th>
             </tr>
           </thead>
@@ -74,8 +74,8 @@ export default async function AdminMerchPage() {
                 <td className={tdClass}>
                   <StatusBadge
                     active={row.in_stock}
-                    onLabel="Disponible"
-                    offLabel="Agotado"
+                    onLabel="Verfügbar"
+                    offLabel="Ausverkauft"
                   />
                 </td>
                 <td className={tdClass}>{row.sort_order ?? 0}</td>
@@ -84,7 +84,7 @@ export default async function AdminMerchPage() {
                     <Link
                       href={`/admin/shop/${row.id}/edit`}
                       className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
-                      aria-label="Editar"
+                      aria-label="Bearbeiten"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </Link>
@@ -99,7 +99,7 @@ export default async function AdminMerchPage() {
                   colSpan={6}
                   className="px-4 py-10 text-center text-muted-foreground"
                 >
-                  No hay productos todavía.
+                  Noch keine Produkte vorhanden.
                 </td>
               </tr>
             )}

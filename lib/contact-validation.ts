@@ -14,19 +14,19 @@ export function validateContactForm(fields: ContactFormFields): string | null {
   const message = fields.message.trim();
 
   if (!name || !email || !message) {
-    return "Por favor, completa nombre, email y mensaje.";
+    return "Bitte Name, E-Mail und Nachricht ausfüllen.";
   }
   if (!subject) {
-    return "Selecciona un asunto.";
+    return "Bitte einen Betreff wählen.";
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return "Introduce un email válido.";
+    return "Bitte eine gültige E-Mail-Adresse eingeben.";
   }
   if (message.length < 10) {
-    return "El mensaje debe tener al menos 10 caracteres.";
+    return "Die Nachricht muss mindestens 10 Zeichen lang sein.";
   }
   if (phone && !/^[+0-9 ()-]{6,20}$/.test(phone)) {
-    return "Teléfono inválido";
+    return "Ungültige Telefonnummer";
   }
 
   return null;

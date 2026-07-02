@@ -367,3 +367,111 @@ on conflict (slug) do update set
 
 notify pgrst, 'reload schema';
 
+-- Membership / trial training inquiries (public wizard → admin review).
+
+create schema if not exists app;
+
+create table if not exists app.join_inquiry (
+  id          bigint generated always as identity primary key,
+  birth_year  int not null,
+  team_id     bigint references app.team(id) on delete set null,
+  team_name   text not null,
+  child_name  text,
+  contact_name text not null,
+  email       text not null,
+  phone       text,
+  message     text,
+  handled     boolean not null default false,
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists join_inquiry_created_idx
+  on app.join_inquiry(created_at desc);
+
+alter table app.join_inquiry enable row level security;
+
+drop policy if exists public_insert_join_inquiry on app.join_inquiry;
+create policy public_insert_join_inquiry on app.join_inquiry
+  for insert to anon, authenticated with check (true);
+
+drop policy if exists admin_all_join_inquiry on app.join_inquiry;
+create policy admin_all_join_inquiry on app.join_inquiry
+  for all to authenticated using (true) with check (true);
+
+grant usage on schema app to anon, authenticated;
+grant insert on app.join_inquiry to anon, authenticated;
+grant all on app.join_inquiry to authenticated;
+
+notify pgrst, 'reload schema';
+-- Club calendar: trainings, gatherings, meetings (not ÖFB fixtures).
+
+create schema if not exists app;
+
+create table if not exists app.club_event (
+  id          bigint generated always as identity primary key,
+  title       text not null,
+  event_type  text not null default 'training'
+    check (event_type in ('training', 'gathering', 'meeting', 'tournament', 'match', 'other')),
+  team_id     bigint references app.team(id) on delete set null,
+  description text,
+  location    text,
+  starts_at   timestamptz not null,
+  ends_at     timestamptz,
+  all_day     boolean not null default false,
+  published   boolean not null default true,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+create index if not exists club_event_starts_idx
+  on app.club_event(starts_at desc);
+
+create index if not exists club_event_team_idx
+  on app.club_event(team_id);
+
+alter table app.club_event enable row level security;
+
+drop policy if exists public_read_club_event on app.club_event;
+create policy public_read_club_event on app.club_event
+  for select to anon, authenticated using (published = true);
+
+drop policy if exists admin_all_club_event on app.club_event;
+create policy admin_all_club_event on app.club_event
+  for all to authenticated using (true) with check (true);
+
+grant usage on schema app to anon, authenticated;
+grant select on app.club_event to anon, authenticated;
+grant all on app.club_event to authenticated;
+
+notify pgrst, 'reload schema';
+-- Optional ÖFB Vereinswidget embed (Spielplan Mannschaft) per team.
+
+alter table app.team
+  add column if not exists oefb_widget_spiele text;
+
+notify pgrst, 'reload schema';
+-- External tournament links / MeinTurnierplan widget embeds on club events.
+
+alter table app.club_event
+  add column if not exists external_url text,
+  add column if not exists external_widget text;
+
+notify pgrst, 'reload schema';
+-- Training pitch / field assignment for club calendar.
+
+alter table app.club_event
+  add column if not exists field text;
+
+notify pgrst, 'reload schema';
+-- Match (Spiel) event type for club calendar.
+
+alter table app.club_event
+  drop constraint if exists club_event_event_type_check;
+
+alter table app.club_event
+  add constraint club_event_event_type_check
+  check (event_type in (
+    'training', 'gathering', 'meeting', 'tournament', 'match', 'other'
+  ));
+
+notify pgrst, 'reload schema';

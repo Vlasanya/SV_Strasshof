@@ -5,7 +5,7 @@ import { getNews } from "@/lib/data";
 import { EmptyState, PageHeader } from "@/components/site/empty-state";
 import { formatDate } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Noticias" };
+export const metadata: Metadata = { title: "News" };
 
 export default async function NewsPage({
   searchParams,
@@ -25,14 +25,14 @@ export default async function NewsPage({
 
   return (
     <div className="max-w-[1280px] mx-auto px-4 md:px-8 py-16">
-      <PageHeader eyebrow="Actualidad" title="Noticias" />
+      <PageHeader eyebrow="Aktuelles" title="News" />
       <div className="flex flex-wrap gap-2 mb-8 -mt-6">
         {[
-          { label: "Todas", value: "" },
-          { label: "Resultados", value: "Resultados" },
-          { label: "Club", value: "Club" },
-          { label: "Copa", value: "Copa" },
-          { label: "Otros", value: "Otros" },
+          { label: "Alle", value: "" },
+          { label: "Ergebnisse", value: "Resultados" },
+          { label: "Verein", value: "Club" },
+          { label: "Pokal", value: "Copa" },
+          { label: "Sonstiges", value: "Otros" },
         ].map((item) => (
           <Link
             key={item.label}
@@ -50,8 +50,8 @@ export default async function NewsPage({
       {news.length === 0 ? (
         <EmptyState
           icon={Newspaper}
-          title="No hay noticias publicadas"
-          description="Vuelve pronto para conocer las novedades del club."
+          title="Keine News veröffentlicht"
+          description="Schau bald wieder vorbei für Neuigkeiten aus dem Verein."
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

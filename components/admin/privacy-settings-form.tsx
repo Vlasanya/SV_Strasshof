@@ -8,18 +8,18 @@ export function PrivacySettingsForm({ settings }: { settings: SiteSettings }) {
   return (
     <AdminForm
       action={upsertPrivacySettings}
-      submitLabel="Guardar"
-      successMessage="Ajustes de privacidad actualizados."
+      submitLabel="Speichern"
+      successMessage="Datenschutz-Einstellungen aktualisiert."
     >
       <CheckboxField
-        label="Mostrar fotos de jugadores en la web pública"
+        label="Spielerfotos auf der öffentlichen Website anzeigen"
         name="public_show_player_photos"
         defaultChecked={settings["public_show_player_photos"] !== "false"}
       />
       <p className="text-xs text-muted-foreground -mt-2">
-        Si lo desactivas, no se mostrará ninguna foto de jugador en las páginas
-        públicas (se usará el dorsal). Recomendado si no dispones de
-        consentimiento de imagen, especialmente para menores.
+        Wenn deaktiviert, werden keine Spielerfotos öffentlich gezeigt.
+        Empfohlen, wenn keine Bildrechte vorliegen — besonders bei
+        Jugendspielern.
       </p>
     </AdminForm>
   );

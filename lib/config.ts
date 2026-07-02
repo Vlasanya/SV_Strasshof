@@ -3,6 +3,9 @@
  * Identity fields (name, contact, socials) are stored in app.site_settings
  * and merged in getClubInfo().
  */
+/** Default club crest served from /public (overridable via brand_logo_url in admin). */
+export const SITE_LOGO_URL = "/logo-color.png";
+
 export const CLUB = {
   shortName: process.env.NEXT_PUBLIC_CLUB_SHORT_NAME ?? "Strasshof",
   tagline:
@@ -54,6 +57,11 @@ export function oefbKaderUrl(teamSlug: string): string {
   return `${base}/Mannschaften/${season}/${teamSlug}/Kader/`;
 }
 
+/** Page used to load the ÖFB season squad list (logos + navigation). */
+export function oefbMannschaftenCatalogUrl(): string {
+  return oefbKaderUrl("KM");
+}
+
 /** Resolve ÖFB path or full URL. */
 export function resolveOefbUrl(pathOrUrl: string | null | undefined): string {
   if (!pathOrUrl) return CLUB.oefbBaseUrl.replace(/\/+$/, "");
@@ -65,6 +73,8 @@ export function resolveOefbUrl(pathOrUrl: string | null | undefined): string {
 export const NAV_LINKS = [
   { href: "/", label: "Start" },
   { href: "/mannschaften", label: "Mannschaften" },
+  { href: "/termine", label: "Termine" },
+  { href: "/beitritt", label: "Mitglied werden" },
   { href: "/spiele", label: "Spiele" },
   { href: "/news", label: "News" },
   { href: "/sponsoren", label: "Sponsoren" },

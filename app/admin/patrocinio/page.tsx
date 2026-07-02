@@ -17,23 +17,24 @@ export default async function AdminSponsorshipPage() {
     <div className="space-y-10">
       <section>
         <h2 className="font-display text-lg font-bold uppercase tracking-tight text-foreground mb-4">
-          Textos y contacto
+          Texte & Kontakt
         </h2>
         <SponsorshipSettingsForm settings={settings} />
       </section>
 
       <section>
         <h2 className="font-display text-lg font-bold uppercase tracking-tight text-foreground mb-4">
-          Planes de colaboración
+          Sponsoring-Pakete
         </h2>
         <ListToolbar
           count={plans.length}
-          noun="planes"
+          noun="Pakete"
           addHref="/admin/patrocinio/planes/new"
-          addLabel="Nuevo plan"
+          addLabel="Neues Paket"
         />
         <p className="mt-2 mb-3 text-xs text-muted-foreground">
-          Arrastra las filas para cambiar el orden en la página pública.
+          Zeilen per Drag & Drop sortieren — die Reihenfolge gilt auf der
+          öffentlichen Seite.
         </p>
         <SponsorshipPlansTable
           key={plans.map((p) => p.id).join("-")}
@@ -43,16 +44,17 @@ export default async function AdminSponsorshipPage() {
 
       <section>
         <h2 className="font-display text-lg font-bold uppercase tracking-tight text-foreground mb-4">
-          Acciones publicitarias individuales
+          Einzelne Werbeaktionen
         </h2>
         <ListToolbar
           count={actions.length}
-          noun="acciones"
+          noun="Aktionen"
           addHref="/admin/patrocinio/acciones/new"
-          addLabel="Nueva acción"
+          addLabel="Neue Aktion"
         />
         <p className="mt-2 mb-3 text-xs text-muted-foreground">
-          Arrastra las filas para cambiar el orden en la página pública.
+          Zeilen per Drag & Drop sortieren — die Reihenfolge gilt auf der
+          öffentlichen Seite.
         </p>
         <AdActionsTable
           key={actions.map((a) => a.id).join("-")}

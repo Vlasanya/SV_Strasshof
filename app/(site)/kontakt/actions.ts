@@ -34,7 +34,7 @@ export async function submitContact(
   if (!hasSupabaseEnv()) {
     return {
       ok: false,
-      error: "El formulario no está disponible ahora mismo.",
+      error: "Das Kontaktformular ist derzeit nicht verfügbar.",
     };
   }
 
@@ -53,14 +53,14 @@ export async function submitContact(
     if (error) {
       return {
         ok: false,
-        error: "No se pudo enviar el mensaje. Inténtalo más tarde.",
+        error: "Nachricht konnte nicht gesendet werden. Bitte später erneut versuchen.",
       };
     }
     return { ok: true };
   } catch {
     return {
       ok: false,
-      error: "No se pudo enviar el mensaje. Inténtalo más tarde.",
+      error: "Nachricht konnte nicht gesendet werden. Bitte später erneut versuchen.",
     };
   }
 }

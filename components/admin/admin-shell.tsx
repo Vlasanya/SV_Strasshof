@@ -5,15 +5,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart2,
+  Calendar,
+  Handshake,
   LogOut,
   Mail,
   Menu,
-  Handshake,
   Newspaper,
+  ScanText,
   Settings,
   Shield,
   ShoppingBag,
   Star,
+  UserPlus,
   Users,
 } from "lucide-react";
 import { signOut } from "@/app/admin/actions";
@@ -23,7 +26,10 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: BarChart2, exact: true },
   { href: "/admin/news", label: "News", icon: Newspaper },
+  { href: "/admin/transkription", label: "Transkription", icon: ScanText },
   { href: "/admin/mannschaften", label: "Mannschaften", icon: Users },
+  { href: "/admin/termine", label: "Termine", icon: Calendar },
+  { href: "/admin/beitritt", label: "Anmeldungen", icon: UserPlus },
   { href: "/admin/sponsoren", label: "Sponsoren", icon: Star },
   { href: "/admin/patrocinio", label: "Patronat", icon: Handshake },
   { href: "/admin/shop", label: "Shop", icon: ShoppingBag },

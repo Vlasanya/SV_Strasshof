@@ -1,14 +1,21 @@
 import Link from "next/link";
 import {
+  Calendar,
   ChevronRight,
+  Handshake,
   Mail,
   Newspaper,
+  ScanText,
+  Settings,
   ShoppingBag,
   Star,
+  UserPlus,
   Users,
 } from "lucide-react";
 import {
+  getClubEvents,
   getContactMessages,
+  getJoinInquiries,
   getMerch,
   getNews,
   getSponsors,
@@ -18,15 +25,19 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const [news, teams, sponsors, merch, messages] = await Promise.all([
+  const [news, teams, sponsors, merch, messages, joinInquiries, upcomingEvents] =
+    await Promise.all([
     getNews(),
     getTeams({ includeHidden: true }),
     getSponsors(),
     getMerch(),
     getContactMessages(),
+    getJoinInquiries({ limit: 100 }),
+    getClubEvents({ publishedOnly: false, upcomingOnly: true, limit: 100 }),
   ]);
 
   const unhandled = messages.data.filter((m) => !m.handled).length;
+  const unhandledJoin = joinInquiries.data.filter((j) => !j.handled).length;
 
   const stats = [
     {
@@ -54,6 +65,18 @@ export default async function AdminDashboard() {
       color: "bg-rose-100 text-rose-600",
     },
     {
+      label: "Kommende Termine",
+      value: upcomingEvents.length,
+      icon: Calendar,
+      color: "bg-teal-100 text-teal-600",
+    },
+    {
+      label: "Neue Anmeldungen",
+      value: unhandledJoin,
+      icon: UserPlus,
+      color: "bg-violet-100 text-violet-600",
+    },
+    {
       label: "Ungelesene Nachrichten",
       value: unhandled,
       icon: Mail,
@@ -63,11 +86,15 @@ export default async function AdminDashboard() {
 
   const links = [
     { href: "/admin/news", label: "News", icon: Newspaper },
+    { href: "/admin/transkription", label: "Transkription", icon: ScanText },
     { href: "/admin/mannschaften", label: "Mannschaften", icon: Users },
+    { href: "/admin/termine", label: "Termine", icon: Calendar },
+    { href: "/admin/beitritt", label: "Anmeldungen", icon: UserPlus },
     { href: "/admin/sponsoren", label: "Sponsoren", icon: Star },
+    { href: "/admin/patrocinio", label: "Patronat", icon: Handshake },
     { href: "/admin/shop", label: "Shop", icon: ShoppingBag },
     { href: "/admin/nachrichten", label: "Nachrichten", icon: Mail },
-    { href: "/admin/einstellungen", label: "Einstellungen", icon: Star },
+    { href: "/admin/einstellungen", label: "Einstellungen", icon: Settings },
   ];
 
   return (

@@ -33,7 +33,7 @@ function SubmitButton() {
       disabled={pending}
       className="inline-flex items-center justify-center gap-2 bg-primary hover:brightness-90 disabled:opacity-60 text-primary-foreground font-semibold uppercase tracking-wide px-7 py-3 rounded-lg transition-all text-sm"
     >
-      {pending ? "Enviando..." : "Enviar mensaje"}
+      {pending ? "Wird gesendet…" : "Nachricht senden"}
       {!pending && <Send className="w-4 h-4" />}
     </button>
   );
@@ -48,7 +48,7 @@ export function ContactForm() {
 
   useEffect(() => {
     if (state.ok) {
-      toast.success("¡Mensaje enviado! Te responderemos pronto.");
+      toast.success("Nachricht gesendet! Wir melden uns bald bei dir.");
       setFields(emptyFields);
     } else if (state.error) {
       toast.error(state.error);
@@ -88,7 +88,7 @@ export function ContactForm() {
             htmlFor="name"
             className="block text-sm font-medium text-foreground mb-1.5"
           >
-            Nombre *
+            Name *
           </label>
           <input
             id="name"
@@ -122,14 +122,14 @@ export function ContactForm() {
             htmlFor="phone"
             className="block text-sm font-medium text-foreground mb-1.5"
           >
-            Teléfono
+            Telefon
           </label>
           <input
             id="phone"
             name="phone"
             type="tel"
             inputMode="tel"
-            placeholder="Ej: 600123456"
+            placeholder="z. B. 0664 1234567"
             value={fields.phone}
             onChange={(e) => updateField("phone", e.target.value)}
             className={inputClass}
@@ -140,7 +140,7 @@ export function ContactForm() {
             htmlFor="subject"
             className="block text-sm font-medium text-foreground mb-1.5"
           >
-            Asunto *
+            Betreff *
           </label>
           <select
             id="subject"
@@ -149,13 +149,13 @@ export function ContactForm() {
             onChange={(e) => updateField("subject", e.target.value)}
             className={inputClass}
           >
-            <option value="">Selecciona un asunto…</option>
-            <option value="Inscripción">Inscripción</option>
-            <option value="Patrocinio">Patrocinio</option>
-            <option value="Protección de datos / baja">
-              Protección de datos / baja
+            <option value="">Betreff wählen…</option>
+            <option value="Anmeldung">Anmeldung</option>
+            <option value="Sponsoring">Sponsoring</option>
+            <option value="Datenschutz / Abmeldung">
+              Datenschutz / Abmeldung
             </option>
-            <option value="Otro">Otro</option>
+            <option value="Sonstiges">Sonstiges</option>
           </select>
         </div>
       </div>
@@ -164,7 +164,7 @@ export function ContactForm() {
           htmlFor="message"
           className="block text-sm font-medium text-foreground mb-1.5"
         >
-          Mensaje *
+          Nachricht *
         </label>
         <textarea
           id="message"
@@ -175,7 +175,6 @@ export function ContactForm() {
           className={inputClass}
         />
       </div>
-      <TextArea label="Mensaje" name="message" required rows={5} />
       <SubmitButton />
     </form>
   );

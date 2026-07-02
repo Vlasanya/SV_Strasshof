@@ -15,21 +15,21 @@ export function AdActionsTable({ actions }: { actions: AdAction[] }) {
       items={actions}
       onReorder={reorderAdActions}
       emptyColSpan={3}
-      emptyMessage="No hay acciones todavía."
+      emptyMessage="Noch keine Aktionen."
       columns={[
         {
-          header: "Acción",
+          header: "Aktion",
           cellClassName: `${tdClass} font-medium text-foreground`,
           cell: (a) => a.name,
         },
         {
-          header: "Nota",
+          header: "Hinweis",
           headerClassName: "text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden sm:table-cell",
           cellClassName: `${tdClass} text-muted-foreground hidden sm:table-cell`,
           cell: (a) => a.note ?? "—",
         },
         {
-          header: "Precio",
+          header: "Preis",
           cellClassName: `${tdClass} font-semibold text-foreground whitespace-nowrap`,
           cell: (a) => formatEuro(a.price),
         },
@@ -39,7 +39,7 @@ export function AdActionsTable({ actions }: { actions: AdAction[] }) {
           <Link
             href={`/admin/patrocinio/acciones/${a.id}/edit`}
             className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-            aria-label="Editar"
+            aria-label="Bearbeiten"
           >
             <Pencil className="h-3.5 w-3.5" />
           </Link>

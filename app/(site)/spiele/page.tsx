@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Calendar, ExternalLink } from "lucide-react";
 import { CLUB } from "@/lib/config";
+import { oefbSpieleUrlForTeam } from "@/lib/oefb";
 import { getClubInfo, getTeams } from "@/lib/data";
 import { PageHeader } from "@/components/site/empty-state";
 
@@ -10,7 +11,6 @@ export const metadata: Metadata = { title: "Spiele & Tabellen" };
 export default async function SpielePage() {
   const [club, teams] = await Promise.all([getClubInfo(), getTeams()]);
   const base = CLUB.oefbBaseUrl.replace(/\/+$/, "");
-  const season = CLUB.oefbSeasonSlug;
 
   return (
     <section className="section-dark accent-diagonal min-h-[50vh]">
@@ -40,12 +40,10 @@ export default async function SpielePage() {
 
           {teams.length > 0 && (
             <ul className="grid sm:grid-cols-2 gap-3">
-              {teams.map((t) => {
-                const slug = t.slug;
-                return (
+              {teams.map((t) => (
                   <li key={t.id}>
                     <a
-                      href={`${base}/Mannschaften/${season}/${slug}/Spiele/`}
+                      href={oefbSpieleUrlForTeam(t)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center justify-between p-4 rounded-lg border border-white/10 hover:border-primary text-on-dark text-sm"
@@ -54,8 +52,7 @@ export default async function SpielePage() {
                       <ExternalLink className="w-3.5 h-3.5 opacity-60" />
                     </a>
                   </li>
-                );
-              })}
+              ))}
             </ul>
           )}
 

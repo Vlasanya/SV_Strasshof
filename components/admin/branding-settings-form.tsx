@@ -8,7 +8,7 @@ import {
   type BrandingSettingsInput,
 } from "@/app/admin/actions";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { CheckboxField, TextArea, TextField } from "@/components/admin/form-ui";
+import { CheckboxField } from "@/components/admin/form-ui";
 import type { SiteSettings } from "@/lib/types";
 
 const fileClass =
@@ -85,13 +85,13 @@ export function BrandingSettingsForm({ settings }: { settings: SiteSettings }) {
 
       const res = await upsertBrandingSettings(input);
       if (!res.ok) {
-        toast.error(res.error ?? "No se pudo guardar");
+        toast.error(res.error ?? "Speichern fehlgeschlagen");
         return;
       }
-      toast.success("Marca actualizada.");
+      toast.success("Marke aktualisiert.");
       router.refresh();
     } catch (err) {
-      toast.error((err as Error).message || "No se pudo guardar");
+      toast.error((err as Error).message || "Speichern fehlgeschlagen");
     } finally {
       setBusy(false);
     }
@@ -110,12 +110,12 @@ export function BrandingSettingsForm({ settings }: { settings: SiteSettings }) {
         {logo ? (
           <img
             src={logo}
-            alt="Logo actual"
+            alt="Aktuelles Logo"
             className="h-16 w-16 rounded-lg border border-border object-contain bg-white p-1"
           />
         ) : (
           <p className="text-xs text-muted-foreground">
-            Sin logo: se usa el icono por defecto.
+            Kein Logo hinterlegt — es wird das Standard-Icon verwendet.
           </p>
         )}
         <input
@@ -125,7 +125,7 @@ export function BrandingSettingsForm({ settings }: { settings: SiteSettings }) {
           className={fileClass}
         />
         <p className="text-xs text-muted-foreground">
-          PNG o SVG con fondo transparente. Cuadrado recomendado.
+          PNG oder SVG mit transparentem Hintergrund. Quadratisch empfohlen.
         </p>
         {/* {logo && (
           <CheckboxField label="Quitar el logo actual" name="remove_logo" />
@@ -137,17 +137,17 @@ export function BrandingSettingsForm({ settings }: { settings: SiteSettings }) {
       {/* Hero image */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-foreground">
-          Imagen de portada (hero)
+          Titelbild (Hero)
         </label>
         {hero ? (
           <img
             src={hero}
-            alt="Portada actual"
+            alt="Aktuelles Titelbild"
             className="h-28 w-full max-w-sm rounded-lg border border-border object-cover"
           />
         ) : (
           <p className="text-xs text-muted-foreground">
-            Sin imagen propia: se usa la imagen por defecto.
+            Kein eigenes Bild — es wird das Standardbild verwendet.
           </p>
         )}
         <input
@@ -157,11 +157,11 @@ export function BrandingSettingsForm({ settings }: { settings: SiteSettings }) {
           className={fileClass}
         />
         <p className="text-xs text-muted-foreground">
-          Apaisada y de alta resolución (mín. 1600×900). Se oscurece para que el
-          texto se lea bien.
+          Querformat in hoher Auflösung (mind. 1600×900). Wird abgedunkelt, damit
+          der Text gut lesbar ist.
         </p>
         {hero && (
-          <CheckboxField label="Quitar la imagen actual" name="remove_hero" />
+          <CheckboxField label="Aktuelles Bild entfernen" name="remove_hero" />
         )}
       </div>
 
@@ -170,17 +170,17 @@ export function BrandingSettingsForm({ settings }: { settings: SiteSettings }) {
       {/* Poster / social-media default background */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-foreground">
-          Fondo por defecto para imágenes de partidos
+          Standard-Hintergrund für Spielbilder
         </label>
         {posterBg ? (
           <img
             src={posterBg}
-            alt="Fondo de partidos actual"
+            alt="Aktueller Spiel-Hintergrund"
             className="h-28 w-full max-w-sm rounded-lg border border-border object-cover"
           />
         ) : (
           <p className="text-xs text-muted-foreground">
-            Sin fondo propio: se usa un degradado oscuro por defecto.
+            Kein eigener Hintergrund — es wird ein dunkler Verlauf verwendet.
           </p>
         )}
         <input
@@ -190,9 +190,10 @@ export function BrandingSettingsForm({ settings }: { settings: SiteSettings }) {
           className={fileClass}
         />
         <p className="text-xs text-muted-foreground">
-          Se aplica automáticamente al generar imágenes/news de partidos
-          (puedes cambiarlo o quitarlo en cada generación). Vertical u oscura
-          funciona mejor; se le superpone un degradado para que el texto se lea.
+          Wird beim Erzeugen von Spielbildern und News automatisch verwendet
+          (kann pro Erstellung geändert oder entfernt werden). Hochformat oder
+          dunkle Motive funktionieren am besten; ein Verlauf sorgt für gute
+          Lesbarkeit des Textes.
         </p>
         {/* {posterBg && (
           <CheckboxField label="Quitar el fondo actual" name="remove_poster_bg" />
@@ -201,53 +202,13 @@ export function BrandingSettingsForm({ settings }: { settings: SiteSettings }) {
 
       <hr className="border-border" />
 
-      {/* Hero text */}
-      {/* <TextField
-        label="Etiqueta superior"
-        name="hero_eyebrow"
-        defaultValue={settings["hero_eyebrow"]}
-        placeholder="Temporada 2025–26"
-      /> */}
-      {/* <TextField
-        label="Título"
-        name="hero_title"
-        defaultValue={settings["hero_title"]}
-        placeholder="U.D. Fonteta"
-      /> */}
-      {/* <TextField
-        label="Palabra destacada (en rojo)"
-        name="hero_title_highlight"
-        defaultValue={settings["hero_title_highlight"]}
-        hint="Si esta palabra aparece en el título, se resalta en color y en una línea aparte."
-      /> */}
-      {/* <TextArea
-        label="Subtítulo"
-        name="hero_subtitle"
-        rows={3}
-        defaultValue={settings["hero_subtitle"]}
-      /> */}
-      {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TextField
-          label="Botón principal"
-          name="hero_cta_primary_label"
-          defaultValue={settings["hero_cta_primary_label"]}
-          placeholder="Inscripción"
-        />
-        <TextField
-          label="Botón secundario"
-          name="hero_cta_secondary_label"
-          defaultValue={settings["hero_cta_secondary_label"]}
-          placeholder="Ver equipos"
-        />
-      </div> */}
-
       <div className="pt-2">
         <button
           type="submit"
           disabled={busy}
           className="inline-flex items-center gap-2 bg-primary hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
         >
-          {busy ? "Guardando..." : "Guardar"}
+          {busy ? "Speichern…" : "Speichern"}
         </button>
       </div>
     </form>

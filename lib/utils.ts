@@ -47,7 +47,7 @@ export function publicPlayerName(p: {
   if (first) return last ? `${first} ${last.charAt(0)}.` : first;
   // Fallback: ffcv stores "APELLIDOS, NOMBRE" — derive from full_name.
   const full = p.full_name?.trim();
-  if (!full) return "Jugador/a";
+  if (!full) return "Spieler/in";
   const [surnames, given] = full.split(",").map((s) => s.trim());
   if (given) return `${given} ${surnames?.charAt(0) ?? ""}.`.trim();
   return full;

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
-import { CLUB, oefbKaderUrl, resolveOefbUrl } from "@/lib/config";
-import { getClubInfo, getTeamBySlug } from "@/lib/data";
+import { getClubEvents, getClubInfo, getTeamBySlug } from "@/lib/data";
+import { getOefbTeamLogoUrl } from "@/lib/oefb-data";
 import { PageHeader } from "@/components/site/empty-state";
+import { TeamEventsSection } from "@/components/site/team-events-section";
+import { OefbKaderPanel } from "@/components/site/oefb-kader-panel";
+import { OefbSpielePanel } from "@/components/site/oefb-spiele-panel";
 
 export async function generateMetadata({
   params,
@@ -13,7 +14,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const team = await getTeamBySlug(slug);
-  return { title: team?.name ?? "Mannschaft" };
+  return {
+    title: team?.name ?? "Mannschaft",
+    robots: { index: false, follow: true },
+  };
 }
 
 export default async function MannschaftDetailPage({
@@ -22,12 +26,20 @@ export default async function MannschaftDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [team, club] = await Promise.all([getTeamBySlug(slug), getClubInfo()]);
+  const team = await getTeamBySlug(slug);
   if (!team) notFound();
 
-  const oefbUrl =
-    resolveOefbUrl(team.oefb_url) ||
-    oefbKaderUrl(team.slug);
+  const [club, events, teamLogoUrl] = await Promise.all([
+    getClubInfo(),
+    getClubEvents({
+      teamId: team.id,
+      includeClubWide: true,
+      publishedOnly: true,
+      upcomingOnly: true,
+      limit: 8,
+    }),
+    getOefbTeamLogoUrl(team),
+  ]);
 
   return (
     <section className="section-dark accent-diagonal min-h-[50vh]">
@@ -39,15 +51,27 @@ export default async function MannschaftDetailPage({
           tone="dark"
         />
 
+        {(teamLogoUrl || team.photo_url) && (
+          <div className="mt-6 flex flex-wrap items-start gap-6">
+            {teamLogoUrl ? (
+              <img
+                src={teamLogoUrl}
+                alt={team.name}
+                className="w-28 h-28 rounded-2xl object-cover bg-white/5 border border-white/10"
+              />
+            ) : null}
+            {team.photo_url ? (
+              <img
+                src={team.photo_url}
+                alt={team.name}
+                className="w-full max-w-md rounded-2xl object-cover max-h-80"
+              />
+            ) : null}
+          </div>
+        )}
+
         <div className="grid gap-8 lg:grid-cols-2 mt-8">
-          {team.photo_url && (
-            <img
-              src={team.photo_url}
-              alt={team.name}
-              className="w-full rounded-2xl object-cover max-h-80"
-            />
-          )}
-          <div className="space-y-4 text-on-dark">
+          <div className="space-y-4 text-on-dark lg:col-span-2">
             {team.coach_name && (
               <p>
                 <span className="text-on-dark-muted">Trainer: </span>
@@ -59,26 +83,13 @@ export default async function MannschaftDetailPage({
                 {team.description}
               </p>
             )}
-            <a
-              href={oefbUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 btn-primary px-5 py-2.5 rounded-lg text-sm font-semibold"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Kader auf vereine.oefb.at
-            </a>
-            <p className="text-xs text-on-dark-muted">
-              Spielplan und Tabellen ebenfalls auf der{" "}
-              <Link
-                href="/spiele"
-                className="underline hover:text-primary"
-              >
-                ÖFB-Seite
-              </Link>
-              .
-            </p>
           </div>
+        </div>
+
+        <div className="mt-8 space-y-8">
+          <OefbKaderPanel team={team} />
+          <TeamEventsSection events={events} />
+          <OefbSpielePanel team={team} />
         </div>
       </div>
     </section>

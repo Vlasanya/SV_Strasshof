@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { ImageLightbox } from "@/components/site/image-lightbox";
+import { SITE_LOGO_URL } from "@/lib/config";
 import { getClubInfo, getSiteSettings } from "@/lib/data";
 
 export default async function SiteLayout({
@@ -10,7 +11,10 @@ export default async function SiteLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <SiteHeader club={club} logoUrl={settings["brand_logo_url"] || null} />
+      <SiteHeader
+        club={club}
+        logoUrl={settings["brand_logo_url"] || SITE_LOGO_URL}
+      />
       <main className="flex-1">{children}</main>
       <SiteFooter club={club} logoUrl={settings["brand_logo_url"] || null} />
       <ImageLightbox />

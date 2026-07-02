@@ -47,7 +47,7 @@ export function useSortableList<T extends { id: number }>(
       const res = await onReorder(next.map((item) => item.id));
       if (!res.ok) {
         setItems(previous);
-        toast.error(res.error ?? "No se pudo guardar el orden");
+        toast.error(res.error ?? "Reihenfolge konnte nicht gespeichert werden");
       }
     });
   }

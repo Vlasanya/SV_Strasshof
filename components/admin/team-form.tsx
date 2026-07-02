@@ -55,6 +55,19 @@ export function TeamForm({ team }: { team?: Team }) {
         placeholder="https://vereine.oefb.at/.../Kader/"
       />
 
+      <div>
+        <TextArea
+          label="ÖFB Spielplan-Widget (optional)"
+          name="oefb_widget_spiele"
+          rows={5}
+          defaultValue={team?.oefb_widget_spiele ?? ""}
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          Embed-Code aus dem ÖFB-Vereinsportal (Vereinswidgets → Spielplan
+          Mannschaft). Ohne Widget wird ein Link zu vereine.oefb.at angezeigt.
+        </p>
+      </div>
+
       <TextField
         label="Sortierung"
         name="sort_order"

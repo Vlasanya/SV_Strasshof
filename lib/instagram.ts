@@ -107,7 +107,7 @@ export interface RefreshResult {
  */
 export async function refreshIgToken(supabase: Db): Promise<RefreshResult> {
   const { token } = await getIgCredentials(supabase);
-  if (!token) return { ok: false, error: "No hay token de Instagram configurado." };
+  if (!token) return { ok: false, error: "Kein Instagram-Token konfiguriert." };
 
   const url = new URL(`${IG_HOST}/refresh_access_token`);
   url.searchParams.set("grant_type", "ig_refresh_token");
@@ -118,10 +118,10 @@ export async function refreshIgToken(supabase: Db): Promise<RefreshResult> {
     const res = await fetch(url, { method: "GET", cache: "no-store" });
     json = await res.json();
     if (!res.ok || !json.access_token) {
-      return { ok: false, error: json?.error?.message ?? "No se pudo renovar el token." };
+      return { ok: false, error: json?.error?.message ?? "Token konnte nicht erneuert werden." };
     }
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Error de red." };
+    return { ok: false, error: e instanceof Error ? e.message : "Netzwerkfehler." };
   }
 
   const expiresAt = await persistToken(

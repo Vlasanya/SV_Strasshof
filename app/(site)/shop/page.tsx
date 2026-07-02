@@ -4,7 +4,7 @@ import { getMerch } from "@/lib/data";
 import { EmptyState, PageHeader } from "@/components/site/empty-state";
 import { formatEuro } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Tienda" };
+export const metadata: Metadata = { title: "Shop" };
 
 export default async function MerchPage() {
   const items = await getMerch();
@@ -12,15 +12,15 @@ export default async function MerchPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       <PageHeader
-        eyebrow="Tienda oficial"
-        title="Tienda"
-        subtitle="Luce los colores del club. Recoge tu pedido en el club."
+        eyebrow="Offizieller Shop"
+        title="Shop"
+        subtitle="Zeige die Vereinsfarben. Abholung deiner Bestellung im Verein."
       />
       {items.length === 0 ? (
         <EmptyState
           icon={ShoppingBag}
-          title="La tienda está en preparación"
-          description="Pronto podrás comprar productos oficiales del club."
+          title="Der Shop wird vorbereitet"
+          description="Bald kannst du offizielle Vereinsprodukte kaufen."
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -59,7 +59,7 @@ export default async function MerchPage() {
                         : "bg-gray-100 text-gray-500"
                     }`}
                   >
-                    {item.in_stock ? "Disponible" : "Agotado"}
+                    {item.in_stock ? "Verfügbar" : "Ausverkauft"}
                   </span>
                 </div>
                 {item.sizes && item.sizes.length > 0 && (

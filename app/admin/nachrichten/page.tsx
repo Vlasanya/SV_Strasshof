@@ -68,13 +68,13 @@ export default async function AdminMessagesPage({
           defaultValue={subject || ""}
           className="border rounded-lg px-3 py-2 text-sm"
         >
-          <option value="">Todos los asuntos</option>
-          <option value="Inscripción">Inscripción</option>
-          <option value="Patrocinio">Patrocinio</option>
-          <option value="Protección de datos / baja">
-            Protección de datos / baja
+          <option value="">Alle Betreffe</option>
+          <option value="Anmeldung">Anmeldung</option>
+          <option value="Sponsoring">Sponsoring</option>
+          <option value="Datenschutz / Abmeldung">
+            Datenschutz / Abmeldung
           </option>
-          <option value="Otro">Otro</option>
+          <option value="Sonstiges">Sonstiges</option>
         </select>
 
         <select
@@ -82,34 +82,34 @@ export default async function AdminMessagesPage({
           defaultValue={params?.handled || ""}
           className="border rounded-lg px-3 py-2 text-sm"
         >
-          <option value="">Todos</option>
-          <option value="false">Nuevos</option>
-          <option value="true">Gestionados</option>
+          <option value="">Alle</option>
+          <option value="false">Neu</option>
+          <option value="true">Erledigt</option>
         </select>
         <select
           name="sort"
           defaultValue={sort}
           className="border rounded-lg px-3 py-2 text-sm"
         >
-          <option value="desc">Más recientes</option>
+          <option value="desc">Neueste zuerst</option>
 
-          <option value="asc">Más antiguos</option>
+          <option value="asc">Älteste zuerst</option>
         </select>
         <button className="px-4 py-2 bg-primary text-white rounded-lg text-sm">
-          Filtrar
+          Filtern
         </button>
       </form>
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-muted-foreground">
           {count === 0
-            ? "No hay mensajes"
-            : ` ${messages.length} de ${count} mensajes`}
+            ? "Keine Nachrichten"
+            : ` ${messages.length} von ${count} Nachrichten`}
         </p>
       </div>
       {messages.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground mt-4">
           <Mail className="w-10 h-10 mx-auto mb-3 opacity-30" />
-          <p className="text-sm">No hay mensajes todavía.</p>
+          <p className="text-sm">Noch keine Nachrichten vorhanden.</p>
         </div>
       ) : (
         <>
@@ -127,7 +127,7 @@ export default async function AdminMessagesPage({
                       <p className="font-semibold text-foreground">{m.name}</p>
                       {!m.handled && (
                         <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                          Nuevo
+                          Neu
                         </span>
                       )}
                     </div>
@@ -153,11 +153,11 @@ export default async function AdminMessagesPage({
                       <button
                         type="submit"
                         className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-green-600"
-                        aria-label="Marcar como gestionado"
+                        aria-label="Als erledigt markieren"
                         title={
                           m.handled
-                            ? "Marcar como nuevo"
-                            : "Marcar como gestionado"
+                            ? "Als neu markieren"
+                            : "Als erledigt markieren"
                         }
                       >
                         <Check className="w-3.5 h-3.5" />
@@ -166,7 +166,7 @@ export default async function AdminMessagesPage({
                     <DeleteButton
                       action={deleteContact}
                       id={m.id}
-                      confirmText="¿Eliminar este mensaje?"
+                      confirmText="Diese Nachricht löschen?"
                     />
                   </div>
                 </div>

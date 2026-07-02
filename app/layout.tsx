@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
       default: `${club.name} — ${club.tagline}`,
       template: `%s · ${club.name}`,
     },
-    description: `Web oficial del ${club.name}. Equipos, partidos, resultados, noticias y más.`,
+    description: `Offizielle Website von ${club.name}. Mannschaften, Spiele, Ergebnisse, News und mehr.`,
   };
 }
 

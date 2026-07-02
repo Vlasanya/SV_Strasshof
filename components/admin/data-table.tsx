@@ -244,7 +244,7 @@ export function DataTable<T extends object>({
               <th className={cn(thClass, "w-10")}>
                 <input
                   type="checkbox"
-                  aria-label="Seleccionar todo"
+                  aria-label="Alle auswählen"
                   checked={allViewSelected}
                   onChange={toggleAllView}
                   className="h-4 w-4 cursor-pointer accent-primary align-middle"
@@ -376,7 +376,7 @@ export function DataTable<T extends object>({
                   <td className={cn(tdClass, "w-10")}>
                     <input
                       type="checkbox"
-                      aria-label="Seleccionar fila"
+                      aria-label="Zeile auswählen"
                       checked={selected.has(rkey)}
                       onChange={() => toggleRow(rkey)}
                       className="h-4 w-4 cursor-pointer accent-primary align-middle"

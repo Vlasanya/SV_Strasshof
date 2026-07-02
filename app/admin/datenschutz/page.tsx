@@ -1,5 +1,6 @@
 import { getSiteSettings } from "@/lib/data";
 import { LegalSettingsForm } from "@/components/admin/legal-settings-form";
+import { PrivacySettingsForm } from "@/components/admin/privacy-settings-form";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,13 @@ export default async function AdminPrivacyPage() {
 
   return (
     <div className="space-y-8 max-w-2xl">
+      <section>
+        <h2 className="font-display text-lg font-bold uppercase tracking-tight text-foreground mb-4">
+          Datenschutz
+        </h2>
+        <PrivacySettingsForm settings={settings} />
+      </section>
+
       <section>
         <h2 className="font-display text-lg font-bold uppercase tracking-tight text-foreground mb-4">
           Rechtliche Texte

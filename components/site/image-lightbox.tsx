@@ -81,7 +81,7 @@ export function ImageLightbox() {
     >
       <button
         type="button"
-        aria-label="Cerrar"
+        aria-label="Schließen"
         onClick={() => setSrc(null)}
         className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
       >

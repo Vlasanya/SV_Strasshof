@@ -12,18 +12,20 @@ import {
   getSponsors,
   getTeams,
 } from "@/lib/data";
+import { getOefbTeamLogoMap } from "@/lib/oefb-data";
 import { categoryColor, formatDate } from "@/lib/utils";
 
 const HERO_FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1764703666646-acc2f7d48857?w=1600&h=900&fit=crop&auto=format";
 
 export default async function HomePage() {
-  const [club, settings, news, teams, sponsors] = await Promise.all([
+  const teams = await getTeams();
+  const [club, settings, news, sponsors, teamLogoBySlug] = await Promise.all([
     getClubInfo(),
     getSiteSettings(),
     getNews({ publishedOnly: true, limit: 3 }),
-    getTeams(),
     getSponsors({ activeOnly: true }),
+    getOefbTeamLogoMap(teams),
   ]);
 
   const heroImage = settings["hero_image_url"] || HERO_FALLBACK_IMAGE;
@@ -78,12 +80,18 @@ export default async function HomePage() {
             </p>
           )}
           <div className="flex flex-wrap gap-3">
+            <Link
+              href="/beitritt"
+              className="inline-flex items-center gap-2 bg-primary hover:brightness-90 text-primary-foreground font-semibold uppercase tracking-wide px-7 py-3.5 rounded-lg transition-all text-sm"
+            >
+              Mitglied werden <ArrowRight className="w-4 h-4" />
+            </Link>
             {ctaPrimary && (
               <Link
                 href="/kontakt"
-                className="inline-flex items-center gap-2 bg-primary hover:brightness-90 text-primary-foreground font-semibold uppercase tracking-wide px-7 py-3.5 rounded-lg transition-all text-sm"
+                className="inline-flex items-center gap-2 border border-on-dark/30 hover:border-primary text-on-dark font-semibold uppercase tracking-wide px-7 py-3.5 rounded-lg transition-all text-sm"
               >
-                {ctaPrimary} <ArrowRight className="w-4 h-4" />
+                {ctaPrimary}
               </Link>
             )}
             {ctaSecondary && (
@@ -184,7 +192,10 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {teams.slice(0, 6).map((team) => {
               const image =
-                team.photo_url || settings["brand_logo_url"] || null;
+                teamLogoBySlug[team.slug] ||
+                team.photo_url ||
+                settings["brand_logo_url"] ||
+                null;
               return (
                 <Link
                   href={`/mannschaften/${team.slug}`}

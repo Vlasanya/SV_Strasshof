@@ -30,15 +30,15 @@ function InstagramPublishPanel({
   function publish() {
     void (async () => {
       const ok = await confirm({
-        title: "Publicar en Instagram",
-        description: "Se publicará la versión guardada de la noticia.",
-        confirmLabel: "Publicar",
+        title: "Auf Instagram veröffentlichen",
+        description: "Die gespeicherte Version des Beitrags wird veröffentlicht.",
+        confirmLabel: "Veröffentlichen",
       });
       if (!ok) return;
       start(async () => {
         const res = await postNewsToInstagram(id);
-        if (res.ok) toast.success("Publicado en Instagram");
-        else toast.error(res.error ?? "No se pudo publicar");
+        if (res.ok) toast.success("Auf Instagram veröffentlicht");
+        else toast.error(res.error ?? "Veröffentlichen fehlgeschlagen");
       });
     })();
   }
@@ -49,10 +49,10 @@ function InstagramPublishPanel({
         <p className="font-medium text-foreground">Instagram</p>
         <p className="text-xs text-muted-foreground">
           {published
-            ? "Esta publicación ya ha sido publicada en Instagram."
+            ? "Dieser Beitrag wurde bereits auf Instagram veröffentlicht."
             : hasImages
-              ? "Publica la versión guardada (portada o galería). Guarda los cambios antes de publicar."
-              : "Añade una imagen de portada o galería (y guarda) para poder publicar."}
+              ? "Veröffentlicht die gespeicherte Version (Titelbild oder Galerie). Änderungen zuerst speichern."
+              : "Titelbild oder Galerie hinzufügen (und speichern), um zu veröffentlichen."}
         </p>
       </div>
       <button
@@ -62,7 +62,7 @@ function InstagramPublishPanel({
         className="inline-flex items-center gap-2 bg-primary hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
       >
         <Share2 className="w-4 h-4" />
-        {pending ? "Publicando..." : "Publicar en Instagram"}
+        {pending ? "Wird veröffentlicht…" : "Auf Instagram veröffentlichen"}
       </button>
     </div>
   );
@@ -88,52 +88,52 @@ export function NewsForm({ article }: { article?: NewsArticle }) {
       <AdminForm
         action={upsertNews}
         cancelHref="/admin/news"
-        submitLabel={isEdit ? "Guardar" : "Publicar"}
+        submitLabel={isEdit ? "Speichern" : "Veröffentlichen"}
       >
         {article && <input type="hidden" name="id" value={article.id} />}
         {/* <input type="hidden" name="images" value={JSON.stringify(gallery)} /> */}
         <TextField
-          label="Título"
+          label="Titel"
           name="title"
           required
           defaultValue={article?.title}
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <SelectField
-            label="Categoría"
+            label="Kategorie"
             name="category"
             required
             defaultValue={article?.category ?? ""}
             options={[
               {
-                label: "Resultados",
-                value: "Resultados",
+                label: "Ergebnisse",
+                value: "Ergebnisse",
               },
               {
-                label: "Club",
-                value: "Club",
+                label: "Verein",
+                value: "Verein",
               },
               {
-                label: "Copa",
-                value: "Copa",
+                label: "Pokal",
+                value: "Pokal",
               },
               {
-                label: "Otros",
-                value: "Otros",
+                label: "Sonstiges",
+                value: "Sonstiges",
               },
             ]}
           />
         </div>
 
         <ImageUploadField
-          label="Imagen de portada"
+          label="Titelbild"
           name="cover_file"
           preview={cover}
         />
         {gallery.length > 0 && (
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
-              Galería ({gallery.length})
+              Galerie ({gallery.length})
             </label>
             <div className="flex flex-wrap gap-3">
               {gallery.map((url, i) => (
@@ -144,7 +144,7 @@ export function NewsForm({ article }: { article?: NewsArticle }) {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
-                    alt={`Imagen ${i + 1}`}
+                    alt={`Bild ${i + 1}`}
                     className="h-32 w-auto object-cover"
                   />
                   <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 bg-black/60 px-2 py-1 opacity-0 transition-opacity group-hover:opacity-100">
@@ -153,7 +153,7 @@ export function NewsForm({ article }: { article?: NewsArticle }) {
                       onClick={() => setCover(url)}
                       className="text-[11px] font-medium text-white hover:underline"
                     >
-                      Portada
+                      Titelbild
                     </button>
                     <button
                       type="button"
@@ -162,7 +162,7 @@ export function NewsForm({ article }: { article?: NewsArticle }) {
                       }
                       className="text-[11px] font-medium text-red-300 hover:underline"
                     >
-                      Quitar
+                      Entfernen
                     </button>
                   </div>
                 </div>
@@ -172,14 +172,14 @@ export function NewsForm({ article }: { article?: NewsArticle }) {
         )}
 
         <TextArea
-          label="Contenido"
+          label="Inhalt"
           name="body"
           rows={10}
           value={body}
           onChange={setBody}
         />
         <CheckboxField
-          label="Publicar en Instagram"
+          label="Auf Instagram veröffentlichen"
           name="publish_instagram"
           defaultChecked={false}
         />

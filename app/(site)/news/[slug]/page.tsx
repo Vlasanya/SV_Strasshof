@@ -12,7 +12,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const article = await getNewsBySlug(slug);
-  return { title: article?.title ?? "Noticia" };
+  return { title: article?.title ?? "News" };
 }
 
 export default async function NewsDetailPage({
@@ -31,7 +31,7 @@ export default async function NewsDetailPage({
           href="/news"
           className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm  transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Todas las noticias
+          <ArrowLeft className="w-4 h-4" /> Alle News
         </Link>
 
         {article.category && (
@@ -73,7 +73,7 @@ export default async function NewsDetailPage({
             <img
               key={src}
               src={src}
-              alt={`${article.title} — imagen ${i + 1}`}
+              alt={`${article.title} — Bild ${i + 1}`}
               className="w-full rounded-2xl border border-border bg-muted"
             />
           ))}

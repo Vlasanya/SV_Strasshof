@@ -20,19 +20,19 @@ export default async function AdminSponsorsPage() {
     <div>
       <ListToolbar
         count={sponsors.length}
-        noun="patrocinadores"
+        noun="Sponsoren"
         addHref="/admin/sponsoren/new"
-        addLabel="Nuevo patrocinador"
+        addLabel="Neuer Sponsor"
       />
       <div className="h-4" />
       <div className={tableWrap}>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40">
-              <th className={thClass}>Empresa</th>
-              <th className={`${thClass} hidden sm:table-cell`}>Nivel</th>
-              <th className={thClass}>Estado</th>
-              <th className={thClass}>Tipo</th>
+              <th className={thClass}>Unternehmen</th>
+              <th className={`${thClass} hidden sm:table-cell`}>Stufe</th>
+              <th className={thClass}>Status</th>
+              <th className={thClass}>Typ</th>
               <th className={thClass}></th>
             </tr>
           </thead>
@@ -53,8 +53,8 @@ export default async function AdminSponsorsPage() {
                 <td className={tdClass}>
                   <StatusBadge
                     active={row.active}
-                    onLabel="Activo"
-                    offLabel="Inactivo"
+                    onLabel="Aktiv"
+                    offLabel="Inaktiv"
                   />
                 </td>
                 <td className={tdClass}>{row.type ?? "—"}</td>
@@ -63,7 +63,7 @@ export default async function AdminSponsorsPage() {
                     <Link
                       href={`/admin/sponsoren/${row.id}/edit`}
                       className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
-                      aria-label="Editar"
+                      aria-label="Bearbeiten"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </Link>
@@ -78,7 +78,7 @@ export default async function AdminSponsorsPage() {
                   colSpan={5}
                   className="px-4 py-10 text-center text-muted-foreground"
                 >
-                  No hay patrocinadores todavía.
+                  Noch keine Sponsoren vorhanden.
                 </td>
               </tr>
             )}

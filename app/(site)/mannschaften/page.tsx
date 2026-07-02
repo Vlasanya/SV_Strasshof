@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import { Users } from "lucide-react";
 import { getClubInfo, getSiteSettings, getTeams } from "@/lib/data";
+import { getOefbTeamLogoMap } from "@/lib/oefb-data";
 import { TeamsGrid } from "@/components/site/teams-grid";
 import { EmptyState, PageHeader } from "@/components/site/empty-state";
 
 export const metadata: Metadata = { title: "Mannschaften" };
 
 export default async function MannschaftenPage() {
-  const [teams, club, settings] = await Promise.all([
-    getTeams(),
+  const teams = await getTeams();
+  const [club, settings, teamLogoBySlug] = await Promise.all([
     getClubInfo(),
     getSiteSettings(),
+    getOefbTeamLogoMap(teams),
   ]);
   const logoUrl = settings["brand_logo_url"] || null;
 
@@ -30,7 +32,11 @@ export default async function MannschaftenPage() {
             description="Teams können in der Admin-Oberfläche angelegt werden."
           />
         ) : (
-          <TeamsGrid teams={teams} logoUrl={logoUrl} />
+          <TeamsGrid
+            teams={teams}
+            logoUrl={logoUrl}
+            teamLogoBySlug={teamLogoBySlug}
+          />
         )}
       </div>
     </section>

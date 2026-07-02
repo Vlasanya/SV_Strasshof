@@ -28,60 +28,60 @@ import {
 import { formatEuro } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Hazte patrocinador",
+  title: "Sponsor werden",
   description:
-    "Dossier de patrocinio: planes de colaboración, acciones publicitarias y opciones de visibilidad para empresas.",
+    "Sponsoring-Dossier: Kooperationspakete, Werbeaktionen und Sichtbarkeitsoptionen für Unternehmen.",
 };
 
 const IMPACT = [
-  { icon: Users, label: "Más de 300 familias vinculadas al club" },
-  { icon: Trophy, label: "Presencia semanal en competiciones federadas" },
-  { icon: MapPin, label: "Instalaciones deportivas con gran visibilidad" },
+  { icon: Users, label: "Mehr als 300 Familien im Verein" },
+  { icon: Trophy, label: "Wöchentliche Präsenz in Meisterschaftswettbewerben" },
+  { icon: MapPin, label: "Sportanlagen mit hoher Sichtbarkeit" },
   {
     icon: Smartphone,
-    label: "Alcance digital a través de nuestras redes sociales",
+    label: "Digitale Reichweite über unsere Social-Media-Kanäle",
   },
 ];
 
 const WHY = [
-  "Incremento de visibilidad de marca.",
-  "Impacto directo sobre cientos de familias.",
-  "Presencia en eventos deportivos durante toda la temporada.",
-  "Asociación con valores positivos y responsabilidad social.",
-  "Acciones promocionales personalizadas.",
-  "Amplificación digital a través de nuestras redes sociales.",
+  "Mehr Markenbekanntheit.",
+  "Direkter Kontakt zu Hunderten von Familien.",
+  "Präsenz bei sportlichen Veranstaltungen während der gesamten Saison.",
+  "Verbindung mit positiven Werten und sozialer Verantwortung.",
+  "Individuell gestaltete Werbeaktionen.",
+  "Digitale Verstärkung über unsere Social-Media-Kanäle.",
 ];
 
 const VISIBILITY = [
   {
     icon: Shirt,
     image: "/patrocinio/kit.jpg",
-    title: "Equipaciones",
+    title: "Ausrüstung",
     items: [
-      "Patrocinio principal en el pecho.",
-      "Patrocinio en mangas.",
-      "Otras ubicaciones disponibles.",
+      "Hauptsponsoring auf der Brust.",
+      "Sponsoring auf den Ärmeln.",
+      "Weitere Platzierungen möglich.",
     ],
   },
   {
     icon: Megaphone,
     image: "/patrocinio/field.jpg",
-    title: "Instalaciones deportivas",
+    title: "Sportanlagen",
     items: [
-      "Vallas publicitarias en el campo.",
-      "Presencia en eventos organizados por el club.",
+      "Werbebanner am Spielfeld.",
+      "Präsenz bei vom Verein organisierten Veranstaltungen.",
     ],
   },
   {
     icon: Share2,
     image: "/patrocinio/social.jpg",
-    title: "Redes sociales",
+    title: "Social Media",
     items: [
-      "Publicaciones patrocinadas.",
-      "Stories compartidas.",
-      "Sorteos conjuntos.",
-      "Vídeos promocionales.",
-      "Enlaces directos y menciones destacadas.",
+      "Gesponserte Beiträge.",
+      "Gemeinsame Stories.",
+      "Gemeinsame Gewinnspiele.",
+      "Werbevideos.",
+      "Direkte Links und hervorgehobene Erwähnungen.",
     ],
   },
 ];
@@ -89,32 +89,32 @@ const VISIBILITY = [
 const VALUES = [
   {
     icon: HeartHandshake,
-    title: "Compromiso",
-    text: "Trabajamos cada día para ofrecer la mejor experiencia deportiva y educativa.",
+    title: "Engagement",
+    text: "Wir arbeiten jeden Tag daran, das bestmögliche sportliche und pädagogische Erlebnis zu bieten.",
   },
   {
     icon: ShieldCheck,
-    title: "Respeto",
-    text: "Promovemos el respeto hacia compañeros, rivales, entrenadores y árbitros.",
+    title: "Respekt",
+    text: "Wir fördern Respekt gegenüber Mitspielerinnen, Mitspielern, Gegnern, Trainerinnen und Schiedsrichtern.",
   },
   {
     icon: Target,
-    title: "Superación",
-    text: "Entendemos el esfuerzo como el camino para alcanzar cualquier objetivo.",
+    title: "Leistungsbereitschaft",
+    text: "Wir verstehen Einsatz und Fleiß als Weg zu jedem Ziel.",
   },
   {
     icon: GraduationCap,
-    title: "Formación",
-    text: "El fútbol es nuestra herramienta para educar y formar personas.",
+    title: "Bildung",
+    text: "Fußball ist unser Mittel, Menschen zu fördern und zu begleiten.",
   },
 ];
 
 const MISSION_VALUES = [
-  "Esfuerzo y compromiso",
-  "Trabajo en equipo",
-  "Respeto a compañeros, rivales y árbitros",
-  "Disciplina y responsabilidad",
-  "Humildad y superación personal",
+  "Einsatz und Engagement",
+  "Teamarbeit",
+  "Respekt gegenüber Mitspielern, Gegnern und Schiedsrichtern",
+  "Disziplin und Verantwortung",
+  "Bescheidenheit und persönliche Weiterentwicklung",
 ];
 
 export default async function PatrocinioPage() {
@@ -140,22 +140,23 @@ export default async function PatrocinioPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
 
           <p className="text-sm font-semibold uppercase tracking-widest text-on-dark-muted mb-3">
-            Dossier de patrocinio
+            Sponsoring-Dossier
           </p>
           <h1 className="font-display text-5xl md:text-[72px] uppercase leading-[0.95] tracking-wide text-on-dark">
-            Patrocina al
+            Sponsor des
             <br />
             <span className="text-primary">{club.name}</span>
           </h1>
           <p className="text-on-dark-muted text-lg mt-5 max-w-xl">
-            Formando jugadores, construyendo personas. Une tu marca a un
-            proyecto deportivo y social con más de 45 años de historia.
+            Spielerinnen und Spieler fördern, Menschen begleiten. Verbinden
+            Sie Ihre Marke mit einem sportlichen und sozialen Projekt mit über
+            45 Jahren Geschichte.
           </p>
           <a
             href="/kontakt"
             className="inline-flex items-center gap-2 bg-primary hover:brightness-90 text-primary-foreground font-semibold uppercase tracking-wide px-7 py-3.5 rounded-lg transition-all text-sm mt-8"
           >
-            Quiero colaborar <ArrowRight className="w-4 h-4" />
+            Ich möchte kooperieren <ArrowRight className="w-4 h-4" />
           </a>
         </div>
       </section>
@@ -164,29 +165,29 @@ export default async function PatrocinioPage() {
       <section className="max-w-6xl mx-auto px-4 py-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
           <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground mb-4">
-            {s("sponsorship_intro_title", "¿Quiénes somos?")}
+            {s("sponsorship_intro_title", "Wer sind wir?")}
           </h2>
           <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
             {s(
               "sponsorship_intro_body",
-              "Un club de fútbol base con una gran comunidad de familias.",
+              "Ein Fußballverein mit einer großen Gemeinschaft von Familien.",
             )}
           </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/patrocinio/team.jpg"
-            alt={`Plantilla ${club.name}`}
+            alt={`Mannschaft ${club.name}`}
             className="mt-6 w-full rounded-2xl border border-border object-cover"
           />
         </div>
         <div>
           <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground mb-4">
-            Nuestra misión
+            Unsere Mission
           </h2>
           <p className="text-muted-foreground leading-relaxed mb-5">
             {s(
               "sponsorship_mission_body",
-              "Entendemos el fútbol como una herramienta educativa.",
+              "Wir verstehen Fußball als pädagogisches Mittel.",
             )}
           </p>
           <ul className="space-y-2">
@@ -209,7 +210,7 @@ export default async function PatrocinioPage() {
       <section className="bg-muted/40 py-16">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground mb-8">
-            Un proyecto con impacto
+            Ein Projekt mit Wirkung
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {IMPACT.map((item) => {
@@ -234,12 +235,12 @@ export default async function PatrocinioPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/patrocinio/kids-bags.jpg"
-              alt={`Jugadores del ${club.shortName}`}
+              alt={`Spielerinnen und Spieler des ${club.shortName}`}
               className="w-full h-full min-h-56 rounded-3xl object-cover"
             />
             <div className="bg-primary rounded-3xl p-8 md:p-10">
               <h3 className="font-display text-2xl font-extrabold uppercase text-white mb-5">
-                ¿Por qué patrocinar al {club.shortName}?
+                Warum {club.shortName} sponsern?
               </h3>
               <div className="grid grid-cols-1 gap-y-3">
                 {WHY.map((w) => (
@@ -260,7 +261,7 @@ export default async function PatrocinioPage() {
       {/* Visibility options */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground mb-8">
-          Opciones de visibilidad
+          Sichtbarkeitsoptionen
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {VISIBILITY.map((v) => {
@@ -306,7 +307,7 @@ export default async function PatrocinioPage() {
         <section className="bg-muted/40 py-16">
           <div className="max-w-6xl mx-auto px-4">
             <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground mb-8">
-              Planes de colaboración
+              Kooperationspakete
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
               {plans.map((plan) => (
@@ -359,11 +360,11 @@ export default async function PatrocinioPage() {
       {actions.length > 0 && (
         <section className="max-w-6xl mx-auto px-4 py-16">
           <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground mb-2">
-            Acciones publicitarias individuales
+            Einzelne Werbeaktionen
           </h2>
           <p className="text-muted-foreground text-sm mb-8">
-            Posibilidad de desarrollar acciones personalizadas adaptadas a los
-            objetivos de cada empresa.
+            Möglichkeit, individuelle Aktionen nach den Zielen jedes
+            Unternehmens zu gestalten.
           </p>
           <div className="bg-card rounded-2xl border border-border divide-y divide-border">
             {actions.map((a) => (
@@ -397,7 +398,7 @@ export default async function PatrocinioPage() {
       <section className="bg-muted/40 py-16">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground mb-8">
-            Nuestros valores
+            Unsere Werte
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {VALUES.map((v) => {
@@ -423,8 +424,8 @@ export default async function PatrocinioPage() {
         </div>
       </section>
 
-      {/* Contact / Hablemos */}
-      <section id="hablemos" className="max-w-6xl mx-auto px-4 py-16">
+      {/* Contact */}
+      <section id="kontakt" className="max-w-6xl mx-auto px-4 py-16">
         <div className="section-dark relative overflow-hidden rounded-3xl p-8 md:p-12 flex flex-col md:flex-row md:items-center gap-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -435,18 +436,20 @@ export default async function PatrocinioPage() {
           />
           <div className="relative flex-1">
             <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-on-dark mb-3">
-              Hablemos
+              Sprechen wir darüber
             </h2>
             <p className="text-on-dark-muted leading-relaxed max-w-md">
-              Cada empresa es diferente y cada patrocinio también. Diseñamos
-              propuestas adaptadas a los objetivos de cada colaborador para
-              garantizar el máximo retorno de la inversión.
+              Jedes Unternehmen ist anders — und jedes Sponsoring auch. Wir
+              entwickeln Angebote, die auf die Ziele jedes Partners
+              zugeschnitten sind, um den größtmöglichen Nutzen zu erzielen.
             </p>
           </div>
           <div className="relative md:w-72 shrink-0 space-y-3">
             {contactName && (
               <div>
-                <p className="font-display text-xl font-bold uppercase text-on-dark">{contactName}</p>
+                <p className="font-display text-xl font-bold uppercase text-on-dark">
+                  {contactName}
+                </p>
                 {contactRole && (
                   <p className="text-sm text-on-dark-muted">{contactRole}</p>
                 )}
@@ -478,7 +481,7 @@ export default async function PatrocinioPage() {
               href="/kontakt"
               className="inline-flex items-center gap-2 bg-primary hover:brightness-90 text-primary-foreground font-bold uppercase tracking-wide px-5 py-2.5 rounded-lg transition-all text-sm mt-2"
             >
-              Escríbenos <ArrowRight className="w-4 h-4" />
+              Schreiben Sie uns <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>

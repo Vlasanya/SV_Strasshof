@@ -18,25 +18,25 @@ export interface ThemeMeta {
 export const THEMES: Record<ThemeName, ThemeMeta> = {
   fonteta: {
     name: "fonteta",
-    label: "Fonteta",
+    label: "Strasshof",
     description:
-      "Modern football-academy identity. Black/white/red (60/30/10), Bebas Neue + Montserrat.",
+      "Club identity: black/white/red, display + body typography.",
   },
   "fonteta-light": {
     name: "fonteta-light",
-    label: "Fonteta Light",
+    label: "Strasshof Hell",
     description:
-      "Light variant of the Fonteta identity: white/grey sections with dark text, same red accent and Bebas Neue + Montserrat.",
+      "Light variant: white/grey sections with dark text, same red accent.",
   },
   midnight: {
     name: "midnight",
     label: "Midnight",
-    description: "Darker, cooler navy-leaning variant of the Fonteta identity.",
+    description: "Darker, cooler navy-leaning variant.",
   },
   classic: {
     name: "classic",
     label: "Classic",
-    description: "The previous lighter look (Barlow Condensed + Outfit).",
+    description: "Alternative lighter palette.",
   },
 };
 

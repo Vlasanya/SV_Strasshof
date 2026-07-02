@@ -5,22 +5,20 @@ import { getClubInfo } from "@/lib/data";
 import { ContactForm } from "@/components/site/contact-form";
 import { PageHeader } from "@/components/site/empty-state";
 import { ContactPhoneActions } from "@/components/site/contact-phone-actions";
+import { phoneDisplayList, whatsappWaMeNumber } from "@/lib/phone";
 
-export const metadata: Metadata = { title: "Contacto" };
+export const metadata: Metadata = { title: "Kontakt" };
 
 export default async function ContactPage() {
   const club = await getClubInfo();
-  const phones =
-    club.phone
-      ?.split(/\s*-\s*|\s*,\s*/g)
-      .map((p) => p.trim())
-      .filter(Boolean) ?? [];
+  const phones = phoneDisplayList(club.phone);
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       <PageHeader
-        eyebrow="Hablemos"
-        title="Contacto"
-        subtitle="¿Quieres inscribirte, colaborar o tienes alguna duda? Escríbenos."
+        eyebrow="Kontakt"
+        title="Schreib uns"
+        subtitle="Anmeldung, Sponsoring oder Fragen — wir melden uns gerne zurück."
       />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 bg-card rounded-2xl border border-border p-6 sm:p-8">
@@ -32,12 +30,8 @@ export default async function ContactPage() {
               <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                 <MapPin className="w-4 h-4" />
               </div>
-
               <div>
-                <p className="text-sm font-semibold text-foreground">
-                  Dirección
-                </p>
-
+                <p className="text-sm font-semibold text-foreground">Adresse</p>
                 {club.address ? (
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -60,7 +54,7 @@ export default async function ContactPage() {
                   <Mail className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Email</p>
+                  <p className="text-sm font-semibold text-foreground">E-Mail</p>
                   <a
                     href={`mailto:${club.email}`}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
@@ -70,23 +64,18 @@ export default async function ContactPage() {
                 </div>
               </div>
             )}
-            {club.phone && (
+            {phones.length > 0 && (
               <div className="flex items-start gap-3">
                 <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                   <Phone className="w-4 h-4" />
                 </div>
-
                 <div>
                   <p className="text-sm font-semibold text-foreground">
-                    Teléfono
+                    Telefon
                   </p>
-
                   <div className="space-y-1">
                     {phones.map((phone) => {
-                      const cleanPhone = phone.replace(/\s+/g, ""); // remove spaces
-
-                      const whatsappNumber = `34${phone.replace(/\D/g, "")}`;
-
+                      const cleanPhone = phone.replace(/\s+/g, "");
                       return (
                         <div
                           key={cleanPhone}
@@ -94,7 +83,7 @@ export default async function ContactPage() {
                         >
                           <ContactPhoneActions
                             phone={cleanPhone}
-                            whatsappNumber={whatsappNumber}
+                            whatsappNumber={whatsappWaMeNumber(phone)}
                           />
                         </div>
                       );
@@ -104,12 +93,15 @@ export default async function ContactPage() {
               </div>
             )}
           </div>
-          <p className="text-xs text-muted-foreground px-1">
-            ¿Quieres ejercer tus derechos de protección de datos o solicitar la
-            baja de una imagen? Elige el asunto «Protección de datos / baja» o
-            consulta nuestra{" "}
+      <p className="text-xs text-muted-foreground px-1">
+        Neu im Verein?{" "}
+        <Link href="/beitritt" className="text-primary underline">
+          Online anmelden
+        </Link>
+        {" · "}
+        Datenschutzanfragen? Wähle im Formular «Datenschutz» oder lies unsere{" "}
             <Link href="/datenschutz" className="text-primary underline">
-              política de privacidad
+              Datenschutzerklärung
             </Link>
             .
           </p>

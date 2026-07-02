@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Shield } from "lucide-react";
-import { NAV_LINKS, type ClubInfo } from "@/lib/config";
+import { Menu, X } from "lucide-react";
+import { NAV_LINKS, SITE_LOGO_URL, type ClubInfo } from "@/lib/config";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader({
@@ -20,6 +20,8 @@ export function SiteHeader({
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
+  const crestUrl = logoUrl || SITE_LOGO_URL;
+
   return (
     <header className="sticky top-0 z-50 bg-surface-dark text-on-dark border-b border-white/10">
       <div className="max-w-[1280px] mx-auto px-4 md:px-8 h-20 flex items-center justify-between gap-4">
@@ -28,17 +30,11 @@ export function SiteHeader({
           className="flex items-center gap-3 group shrink-0"
           onClick={() => setMenuOpen(false)}
         >
-          {logoUrl ? (
-            <img
-              src={logoUrl}
-              alt={club.name}
-              className="w-10 h-10 rounded-lg object-contain"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" />
-            </div>
-          )}
+          <img
+            src={crestUrl}
+            alt={club.name}
+            className="h-12 w-12 object-contain"
+          />
           <div className="leading-tight">
             <span className="block text-base font-display tracking-wide text-on-dark uppercase">
               {club.name}
@@ -69,15 +65,15 @@ export function SiteHeader({
 
         <div className="flex items-center gap-2 shrink-0">
           <Link
-            href="/kontakt"
+            href="/beitritt"
             className="hidden sm:inline-flex items-center rounded-lg bg-primary px-5 py-2.5 text-[13px] font-semibold uppercase tracking-wide text-primary-foreground transition-colors hover:brightness-90"
           >
-            Inscripción
+            Mitglied werden
           </Link>
           <button
             className="lg:hidden p-2 rounded-lg text-on-dark hover:bg-white/10 transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Abrir menú"
+            aria-label="Menü öffnen"
           >
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -103,11 +99,11 @@ export function SiteHeader({
               </Link>
             ))}
             <Link
-              href="/kontakt"
+              href="/beitritt"
               onClick={() => setMenuOpen(false)}
               className="mt-2 px-4 py-2.5 rounded-lg bg-primary text-center text-sm font-semibold uppercase tracking-wide text-primary-foreground"
             >
-              Inscripción
+              Mitglied werden
             </Link>
           </nav>
         </div>

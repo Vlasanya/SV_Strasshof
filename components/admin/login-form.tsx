@@ -30,7 +30,7 @@ export function LoginForm({
     setError(null);
 
     if (!hasSupabaseEnv()) {
-      setError("Supabase no está configurado (revisa .env.local).");
+      setError("Supabase ist nicht konfiguriert (prüfe .env.local).");
       return;
     }
 
@@ -40,7 +40,7 @@ export function LoginForm({
     setLoading(false);
 
     if (error) {
-      setError("Credenciales incorrectas.");
+      setError("Anmeldedaten ungültig.");
       return;
     }
     router.push(redirect);
@@ -66,7 +66,7 @@ export function LoginForm({
             {clubName}
           </p>
           <p className="text-xs text-white/40 uppercase tracking-widest">
-            Panel de administración
+            Admin-Bereich
           </p>
         </div>
 
@@ -90,7 +90,7 @@ export function LoginForm({
           </div>
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">
-              Contraseña
+              Passwort
             </label>
             <input
               id="password"
@@ -108,7 +108,7 @@ export function LoginForm({
             disabled={loading}
             className="w-full bg-primary hover:bg-red-700 disabled:opacity-60 text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
           >
-            {loading ? "Entrando..." : "Iniciar sesión"}
+            {loading ? "Anmelden…" : "Anmelden"}
           </button>
         </form>
       </div>

@@ -21,7 +21,7 @@ export function CameraCaptureModal({ open, onClose, onCapture }: Props) {
 
     async function startCamera() {
       if (!navigator.mediaDevices?.getUserMedia) {
-        toast.error("Tu navegador no permite usar la cámara.");
+        toast.error("Dein Browser unterstützt die Kamera nicht.");
         onClose();
         return;
       }
@@ -49,7 +49,7 @@ export function CameraCaptureModal({ open, onClose, onCapture }: Props) {
         }
       } catch {
         toast.error(
-          "No se pudo acceder a la cámara. Comprueba los permisos del navegador.",
+          "Kamera konnte nicht geöffnet werden. Bitte Browser-Berechtigungen prüfen.",
         );
         onClose();
       }
@@ -70,7 +70,7 @@ export function CameraCaptureModal({ open, onClose, onCapture }: Props) {
   function capture() {
     const video = videoRef.current;
     if (!video || video.videoWidth === 0) {
-      toast.error("La cámara aún no está lista.");
+      toast.error("Die Kamera ist noch nicht bereit.");
       return;
     }
 
@@ -79,7 +79,7 @@ export function CameraCaptureModal({ open, onClose, onCapture }: Props) {
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext("2d");
     if (!ctx) {
-      toast.error("No se pudo capturar la foto.");
+      toast.error("Foto konnte nicht aufgenommen werden.");
       return;
     }
 
@@ -87,7 +87,7 @@ export function CameraCaptureModal({ open, onClose, onCapture }: Props) {
     canvas.toBlob(
       (blob) => {
         if (!blob) {
-          toast.error("No se pudo capturar la foto.");
+          toast.error("Foto konnte nicht aufgenommen werden.");
           return;
         }
         const file = new File([blob], `foto-${Date.now()}.jpg`, {
@@ -107,12 +107,12 @@ export function CameraCaptureModal({ open, onClose, onCapture }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-card shadow-xl">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <p className="text-sm font-semibold text-foreground">Hacer foto</p>
+          <p className="text-sm font-semibold text-foreground">Foto aufnehmen</p>
           <button
             type="button"
             onClick={onClose}
             className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-            aria-label="Cerrar"
+            aria-label="Schließen"
           >
             <X className="h-4 w-4" />
           </button>
@@ -134,7 +134,7 @@ export function CameraCaptureModal({ open, onClose, onCapture }: Props) {
             onClick={onClose}
             className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
           >
-            Cancelar
+            Abbrechen
           </button>
           <button
             type="button"
@@ -142,7 +142,7 @@ export function CameraCaptureModal({ open, onClose, onCapture }: Props) {
             className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
           >
             <Camera className="h-4 w-4" />
-            Capturar
+            Aufnehmen
           </button>
         </div>
       </div>

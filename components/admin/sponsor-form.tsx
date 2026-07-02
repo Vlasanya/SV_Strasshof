@@ -7,7 +7,6 @@ import {
   TextField,
   SelectField,
   ImageUploadField,
-  TextArea,
 } from "@/components/admin/form-ui";
 import type { Sponsor } from "@/lib/types";
 
@@ -17,7 +16,7 @@ export function SponsorForm({ sponsor }: { sponsor?: Sponsor }) {
       {sponsor && <input type="hidden" name="id" value={sponsor.id} />}
 
       <TextField
-        label="Nombre"
+        label="Name"
         name="name"
         required
         defaultValue={sponsor?.name}
@@ -26,27 +25,27 @@ export function SponsorForm({ sponsor }: { sponsor?: Sponsor }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-2">
           <SelectField
-            label="Nivel"
+            label="Stufe"
             name="tier"
             required
             defaultValue={sponsor?.tier ?? ""}
             options={[
-              { label: "Bronce", value: "Bronce" },
-              { label: "Plata", value: "Plata" },
-              { label: "Oro", value: "Oro" },
+              { label: "Bronze", value: "Bronze" },
+              { label: "Silber", value: "Silber" },
+              { label: "Gold", value: "Gold" },
             ]}
           />
         </div>
 
         <div className="flex flex-col gap-2">
           <SelectField
-            label="Tipo"
+            label="Typ"
             name="type"
             required
             defaultValue={sponsor?.type ?? ""}
             options={[
-              { label: "Estacional", value: "Estacional" },
-              { label: "Único", value: "Único" },
+              { label: "Saisonal", value: "Saisonal" },
+              { label: "Einmalig", value: "Einmalig" },
             ]}
           />
         </div>
@@ -54,20 +53,20 @@ export function SponsorForm({ sponsor }: { sponsor?: Sponsor }) {
       <div className="flex flex-col gap-2">
         <ImageUploadField
           name="logo_file"
-          label="Logo URL"
+          label="Logo"
           preview={sponsor?.logo_url}
           required
         />
       </div>
 
       <TextField
-        label="Sitio web"
+        label="Website"
         name="website"
         defaultValue={sponsor?.website}
       />
 
       <CheckboxField
-        label="Activo"
+        label="Aktiv"
         name="active"
         defaultChecked={sponsor?.active ?? true}
       />

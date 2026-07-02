@@ -11,9 +11,9 @@ export default async function AdminNewsPage() {
     <div>
       <ListToolbar
         count={news.length}
-        noun="artículos"
+        noun="Beiträge"
         addHref="/admin/news/new"
-        addLabel="Nueva noticia"
+        addLabel="Neuer Beitrag"
       />
       <NewsAdminTable news={news} />
     </div>

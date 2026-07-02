@@ -9,44 +9,44 @@ export function SponsorshipSettingsForm({ settings }: { settings: SiteSettings }
   return (
     <AdminForm
       action={upsertSponsorshipSettings}
-      submitLabel="Guardar textos"
-      successMessage="Textos actualizados."
+      submitLabel="Texte speichern"
+      successMessage="Texte aktualisiert."
     >
       <TextField
-        label="Título «¿Quiénes somos?»"
+        label="Titel «Über uns»"
         name="sponsorship_intro_title"
         defaultValue={v("sponsorship_intro_title")}
       />
       <TextArea
-        label="Texto «¿Quiénes somos?»"
+        label="Text «Über uns»"
         name="sponsorship_intro_body"
         rows={5}
         defaultValue={v("sponsorship_intro_body")}
       />
       <TextArea
-        label="Texto «Nuestra misión»"
+        label="Text «Unsere Mission»"
         name="sponsorship_mission_body"
         rows={3}
         defaultValue={v("sponsorship_mission_body")}
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <TextField
-          label="Contacto — nombre"
+          label="Kontakt — Name"
           name="sponsorship_contact_name"
           defaultValue={v("sponsorship_contact_name")}
         />
         <TextField
-          label="Contacto — cargo"
+          label="Kontakt — Funktion"
           name="sponsorship_contact_role"
           defaultValue={v("sponsorship_contact_role")}
         />
         <TextField
-          label="Contacto — teléfono"
+          label="Kontakt — Telefon"
           name="sponsorship_contact_phone"
           defaultValue={v("sponsorship_contact_phone")}
         />
         <TextField
-          label="Contacto — email"
+          label="Kontakt — E-Mail"
           name="sponsorship_contact_email"
           defaultValue={v("sponsorship_contact_email")}
         />

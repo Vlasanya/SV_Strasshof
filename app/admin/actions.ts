@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { CLUB, newsUrl } from "@/lib/config";
+import { normalizeExternalUrl } from "@/lib/meinturnierplan";
 import {
   ensureFreshIgToken,
   getIgCredentials,
@@ -46,7 +47,7 @@ export async function upsertNews(
   const id = formData.get("id") ? Number(formData.get("id")) : null;
 
   const title = String(formData.get("title") ?? "").trim();
-  if (!title) return { ok: false, error: "El título es obligatorio." };
+  if (!title) return { ok: false, error: "Der Titel ist erforderlich." };
 
   const publishInstagram = formData.get("publish_instagram") === "on";
   const slug = String(formData.get("slug") ?? "").trim() || slugify(title);
@@ -156,7 +157,7 @@ export async function upsertNews(
     if (error) return { ok: false, error: error.message };
 
     if (!data?.id) {
-      return { ok: false, error: "No se pudo crear la noticia" };
+      return { ok: false, error: "Der Beitrag konnte nicht erstellt werden." };
     }
 
     insertedId = data.id;
@@ -169,7 +170,7 @@ export async function upsertNews(
     const postResult = await postNewsToInstagram(insertedId);
 
     if (!postResult.ok) {
-      return { ok: false, error: "Guardado pero falló Instagram" };
+      return { ok: false, error: "Gespeichert, aber Instagram-Post fehlgeschlagen." };
     }
   }
 
@@ -224,7 +225,7 @@ export async function postNewsToInstagram(
   if (!igId || !token) {
     return {
       ok: false,
-      error: "Falta configurar Instagram (token / cuenta) en Ajustes.",
+      error: "Instagram ist nicht konfiguriert (Token / Konto) unter Einstellungen.",
     };
   }
 
@@ -235,7 +236,7 @@ export async function postNewsToInstagram(
     .eq("id", id)
     .maybeSingle();
 
-  if (!article) return { ok: false, error: "Noticia no encontrada." };
+  if (!article) return { ok: false, error: "Beitrag nicht gefunden." };
 
   // Collect public image URLs: gallery first, fall back to the cover.
   const images: string[] = (
@@ -247,7 +248,7 @@ export async function postNewsToInstagram(
   ).filter(Boolean);
 
   if (images.length === 0) {
-    return { ok: false, error: "La noticia no tiene imágenes para publicar." };
+    return { ok: false, error: "Der Beitrag hat keine Bilder zum Veröffentlichen." };
   }
 
   const caption = buildNewsCaption(article);
@@ -307,7 +308,7 @@ export async function postNewsToInstagram(
   } catch (e) {
     return {
       ok: false,
-      error: e instanceof Error ? e.message : "Error de Instagram.",
+      error: e instanceof Error ? e.message : "Instagram-Fehler.",
     };
   }
 }
@@ -407,11 +408,11 @@ export async function upsertSponsor(
   const id = formData.get("id") ? Number(formData.get("id")) : null;
 
   const name = String(formData.get("name") ?? "").trim();
-  if (!name) return { ok: false, error: "El nombre es obligatorio." };
+  if (!name) return { ok: false, error: "Der Name ist erforderlich." };
   const type = String(formData.get("type") ?? "").trim();
 
   if (!type) {
-    return { ok: false, error: "El tipo es obligatorio." };
+    return { ok: false, error: "Der Typ ist erforderlich." };
   }
 
   const supabase = await db();
@@ -491,7 +492,7 @@ export async function upsertMerch(
   const id = formData.get("id") ? Number(formData.get("id")) : null;
 
   const name = String(formData.get("name") ?? "").trim();
-  if (!name) return { ok: false, error: "El nombre es obligatorio." };
+  if (!name) return { ok: false, error: "Der Name ist erforderlich." };
 
   const supabase = await db();
   const {
@@ -639,6 +640,8 @@ export async function upsertTeam(
     coach_name: String(formData.get("coach_name") ?? "").trim() || null,
     description: String(formData.get("description") ?? "").trim() || null,
     oefb_url: String(formData.get("oefb_url") ?? "").trim() || null,
+    oefb_widget_spiele:
+      String(formData.get("oefb_widget_spiele") ?? "").trim() || null,
     sort_order: Number(formData.get("sort_order") ?? 0) || 0,
     photo_url,
     hidden: formData.get("hidden") === "on",
@@ -668,6 +671,119 @@ export async function deleteTeam(formData: FormData) {
   const supabase = await db();
   await supabase.schema("app").from("team").delete().eq("id", id);
   revalidatePath("/admin/mannschaften");
+  revalidatePath("/mannschaften");
+}
+
+// --- Club calendar (trainings / events, not ÖFB) -----------------------------
+const CLUB_EVENT_TYPES = new Set([
+  "training",
+  "match",
+  "gathering",
+  "meeting",
+  "tournament",
+  "other",
+]);
+
+export async function upsertClubEvent(
+  _prev: ActionResult,
+  formData: FormData,
+): Promise<ActionResult> {
+  const id = formData.get("id") ? Number(formData.get("id")) : null;
+  const title = String(formData.get("title") ?? "").trim();
+  if (!title) return { ok: false, error: "Titel ist erforderlich." };
+
+  const eventType = String(formData.get("event_type") ?? "training").trim();
+  if (!CLUB_EVENT_TYPES.has(eventType)) {
+    return { ok: false, error: "Ungültiger Termintyp." };
+  }
+
+  const allDay = formData.get("all_day") === "on";
+  const startsRaw = String(
+    formData.get(allDay ? "start_date" : "starts_at") ?? "",
+  ).trim();
+  if (!startsRaw) {
+    return { ok: false, error: "Startdatum ist erforderlich." };
+  }
+
+  const startsAt = allDay
+    ? new Date(`${startsRaw}T00:00:00`).toISOString()
+    : new Date(startsRaw).toISOString();
+  if (Number.isNaN(new Date(startsAt).getTime())) {
+    return { ok: false, error: "Ungültiges Startdatum." };
+  }
+
+  let endsAt: string | null = null;
+  const endsRaw = String(
+    formData.get(allDay ? "end_date" : "ends_at") ?? "",
+  ).trim();
+  if (endsRaw) {
+    endsAt = allDay
+      ? new Date(`${endsRaw}T23:59:59`).toISOString()
+      : new Date(endsRaw).toISOString();
+    if (Number.isNaN(new Date(endsAt).getTime())) {
+      return { ok: false, error: "Ungültiges Enddatum." };
+    }
+    if (new Date(endsAt).getTime() < new Date(startsAt).getTime()) {
+      return { ok: false, error: "Ende muss nach dem Start liegen." };
+    }
+  }
+
+  const teamRaw = String(formData.get("team_id") ?? "").trim();
+  const team_id =
+    teamRaw === "" || teamRaw === "club" ? null : Number(teamRaw);
+  if (teamRaw && teamRaw !== "club" && !Number.isFinite(team_id)) {
+    return { ok: false, error: "Ungültige Mannschaft." };
+  }
+
+  const row = {
+    title,
+    event_type: eventType,
+    team_id: Number.isFinite(team_id) ? team_id : null,
+    description: String(formData.get("description") ?? "").trim() || null,
+    location: String(formData.get("location") ?? "").trim() || null,
+    field: String(formData.get("field") ?? "").trim() || null,
+    external_url:
+      normalizeExternalUrl(String(formData.get("external_url") ?? "")) || null,
+    external_widget:
+      String(formData.get("external_widget") ?? "").trim() || null,
+    starts_at: startsAt,
+    ends_at: endsAt,
+    all_day: allDay,
+    published: formData.get("published") === "on",
+    updated_at: new Date().toISOString(),
+  };
+
+  const supabase = await db();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Nicht angemeldet." };
+
+  if (id) {
+    const { error } = await supabase
+      .schema("app")
+      .from("club_event")
+      .update(row)
+      .eq("id", id);
+    if (error) return { ok: false, error: error.message };
+  } else {
+    const { error } = await supabase.schema("app").from("club_event").insert(row);
+    if (error) return { ok: false, error: error.message };
+  }
+
+  revalidatePath("/admin/termine");
+  revalidatePath("/termine");
+  revalidatePath("/mannschaften");
+  redirect("/admin/termine");
+}
+
+export async function deleteClubEvent(formData: FormData) {
+  const id = Number(formData.get("id"));
+  if (!id) return;
+  const supabase = await db();
+  await supabase.schema("app").from("club_event").delete().eq("id", id);
+  revalidatePath("/admin/termine");
+  revalidatePath("/termine");
   revalidatePath("/mannschaften");
 }
 
@@ -735,13 +851,13 @@ export async function upsertPlan(
 ): Promise<ActionResult> {
   const id = formData.get("id") ? Number(formData.get("id")) : null;
   const name = String(formData.get("name") ?? "").trim();
-  if (!name) return { ok: false, error: "El nombre es obligatorio." };
+  if (!name) return { ok: false, error: "Der Name ist erforderlich." };
 
   const featuresRaw = String(formData.get("features") ?? "");
   const row: Record<string, unknown> = {
     name,
     price: Number(formData.get("price") ?? 0) || 0,
-    period: String(formData.get("period") ?? "").trim() || "temporada",
+    period: String(formData.get("period") ?? "").trim() || "Saison",
     features: featuresRaw
       .split("\n")
       .map((f) => f.trim())
@@ -808,7 +924,7 @@ export async function upsertAdAction(
 ): Promise<ActionResult> {
   const id = formData.get("id") ? Number(formData.get("id")) : null;
   const name = String(formData.get("name") ?? "").trim();
-  if (!name) return { ok: false, error: "El nombre es obligatorio." };
+  if (!name) return { ok: false, error: "Der Name ist erforderlich." };
 
   const row: Record<string, unknown> = {
     name,
@@ -897,6 +1013,27 @@ export async function deleteContact(formData: FormData) {
   revalidatePath("/admin/nachrichten");
 }
 
+// --- Join / membership inquiries --------------------------------------------
+
+export async function toggleJoinHandled(formData: FormData) {
+  const id = Number(formData.get("id"));
+  const handled = formData.get("handled") === "true";
+  const supabase = await db();
+  await supabase
+    .schema("app")
+    .from("join_inquiry")
+    .update({ handled: !handled })
+    .eq("id", id);
+  revalidatePath("/admin/beitritt");
+}
+
+export async function deleteJoinInquiry(formData: FormData) {
+  const id = Number(formData.get("id"));
+  const supabase = await db();
+  await supabase.schema("app").from("join_inquiry").delete().eq("id", id);
+  revalidatePath("/admin/beitritt");
+}
+
 // --- Branding: logo, hero image + text (site_settings) ----------------------
 // Images are uploaded to Storage from the browser; only the resulting URLs are
 // passed here (avoids the Server Action body size limit). For the image URL
@@ -957,7 +1094,7 @@ export async function upsertBrandingSettings(
 }
 
 // --- Club info overrides (site_settings) ------------------------------------
-// Federation (FFCV) club data can be broken/outdated. These keys override it on
+// Club contact overrides (name, email, phone, socials) stored in site_settings.
 // the public site. An empty value clears the override (federation data wins).
 const CLUB_INFO_KEYS = [
   "club_name",

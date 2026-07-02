@@ -14,20 +14,20 @@ export function MerchForm({ item }: { item?: MerchItem }) {
     <AdminForm action={upsertMerch} cancelHref="/admin/shop">
       {item && <input type="hidden" name="id" value={item.id} />}
       <TextField
-        label="Nombre"
+        label="Name"
         name="name"
         required
         defaultValue={item?.name}
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <TextField
-          label="Categoría"
+          label="Kategorie"
           name="category"
           defaultValue={item?.category}
-          placeholder="Equipación, Accesorios..."
+          placeholder="Trikot, Accessoires…"
         />
         <TextField
-          label="Precio (€)"
+          label="Preis (€)"
           name="price"
           type="number"
           defaultValue={item?.price}
@@ -37,25 +37,25 @@ export function MerchForm({ item }: { item?: MerchItem }) {
       <div>
         <ImageUploadField
           name="image_file"
-          label="Imagen (URL)"
+          label="Bild"
           preview={item?.image_url}
         />
       </div>
       <TextField
-        label="Tallas"
+        label="Größen"
         name="sizes"
         defaultValue={item?.sizes?.join(", ")}
-        hint="Separadas por comas, p. ej. S, M, L, XL"
+        hint="Kommagetrennt, z. B. S, M, L, XL"
       />
       <TextField
-        label="Posición"
+        label="Position"
         name="sort_order"
         type="number"
         defaultValue={item?.sort_order ?? 0}
-        hint="Número menor aparece primero"
+        hint="Kleinere Zahl erscheint weiter oben"
       />
       <CheckboxField
-        label="Disponible"
+        label="Verfügbar"
         name="in_stock"
         defaultChecked={item?.in_stock ?? true}
       />
