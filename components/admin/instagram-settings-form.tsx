@@ -27,7 +27,17 @@ function describeExpiry(expiresAt: string | null): {
   return { label: `noch ${days} Tag(e) gültig`, tone: "ok" };
 }
 
-export function InstagramSettingsForm({ status }: { status: InstagramStatus }) {
+export function InstagramSettingsForm({
+  status,
+  igMention = "",
+  igDefaultHashtags = "",
+  hasDeleteToken = false,
+}: {
+  status: InstagramStatus;
+  igMention?: string;
+  igDefaultHashtags?: string;
+  hasDeleteToken?: boolean;
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busy, setBusy] = useState(false);
@@ -98,6 +108,29 @@ export function InstagramSettingsForm({ status }: { status: InstagramStatus }) {
               : "Hier den ~60-Tage-Token einfügen"
           }
           hint="Wird sicher gespeichert und vor Ablauf automatisch erneuert. Leer lassen, wenn nur die ID geändert wird."
+        />
+        <TextField
+          label="Erwähnung (@verein)"
+          name="ig_mention"
+          defaultValue={igMention}
+          placeholder="@askoestasshof"
+        />
+        <TextField
+          label="Standard-Hashtags"
+          name="ig_default_hashtags"
+          defaultValue={igDefaultHashtags}
+          placeholder="#Strasshof #fussball"
+        />
+        <TextField
+          label="Token zum Löschen (optional)"
+          name="ig_delete_access_token"
+          type="password"
+          placeholder={
+            hasDeleteToken
+              ? "•••••• (leer lassen, um unverändert zu lassen)"
+              : "Facebook-Login-Token mit instagram_manage_contents"
+          }
+          hint="Nur nötig, um News-Posts von Instagram zu löschen."
         />
       </AdminForm>
     </div>

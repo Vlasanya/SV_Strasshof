@@ -13,6 +13,7 @@ import {
   getTeams,
 } from "@/lib/data";
 import { getOefbTeamLogoMap } from "@/lib/oefb-data";
+import { SponsorCard } from "@/components/site/sponsor-card";
 import { categoryColor, formatDate } from "@/lib/utils";
 
 const HERO_FALLBACK_IMAGE =
@@ -235,27 +236,22 @@ export default async function HomePage() {
       )}
 
       {sponsors.length > 0 && (
-        <section className="border-t border-b border-border bg-white py-10">
+        <section className="border-t border-border bg-muted/30 py-16">
           <div className="max-w-6xl mx-auto px-4">
-            <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">
-              Unsere Sponsoren
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-8">
-              {sponsors.map((s) => (
-                <div
-                  key={s.id}
-                  className="text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors uppercase tracking-wide"
-                >
-                  {s.logo_url ? (
-                    <img
-                      src={s.logo_url}
-                      alt={s.name}
-                      className="h-8 object-contain"
-                    />
-                  ) : (
-                    s.name
-                  )}
-                </div>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground">
+                Unsere Sponsoren
+              </h2>
+              <Link
+                href="/sponsoren"
+                className="text-sm text-primary font-semibold flex items-center gap-1 hover:gap-2 transition-all"
+              >
+                Alle anzeigen <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {sponsors.map((sponsor) => (
+                <SponsorCard key={sponsor.id} sponsor={sponsor} />
               ))}
             </div>
           </div>

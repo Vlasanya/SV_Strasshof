@@ -35,6 +35,14 @@ const MIGRATIONS = {
     file: "supabase/migrations/20260630180000_club_event_match_type.sql",
     table: "app.club_event",
   },
+  sponsor_maps_url: {
+    file: "supabase/migrations/20260702140000_sponsor_maps_url.sql",
+    table: "app.sponsor",
+  },
+  news_instagram: {
+    file: "supabase/migrations/20260702150000_news_instagram.sql",
+    table: "app.news",
+  },
 };
 
 function loadEnvLocal() {

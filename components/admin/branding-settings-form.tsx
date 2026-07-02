@@ -12,7 +12,7 @@ import { CheckboxField } from "@/components/admin/form-ui";
 import type { SiteSettings } from "@/lib/types";
 
 const fileClass =
-  "block w-full text-sm text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-red-700 file:cursor-pointer";
+  "block w-full text-sm text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:brightness-90 file:cursor-pointer";
 
 // Upload an image to the public `branding` bucket from the browser (the admin
 // session is authenticated) and return its public URL.
@@ -206,7 +206,7 @@ export function BrandingSettingsForm({ settings }: { settings: SiteSettings }) {
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex items-center gap-2 bg-primary hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
+          className="inline-flex items-center gap-2 bg-primary hover:brightness-90 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
         >
           {busy ? "Speichern…" : "Speichern"}
         </button>

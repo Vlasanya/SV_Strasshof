@@ -51,7 +51,7 @@ export function SponsorshipPlansTable({ plans }: { plans: SponsorshipPlan[] }) {
       renderActions={(p) => (
         <div className="flex items-center gap-2">
           <Link
-            href={`/admin/patrocinio/planes/${p.id}/edit`}
+            href={`/admin/sponsoring/pakete/${p.id}/edit`}
             className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
             aria-label="Bearbeiten"
           >

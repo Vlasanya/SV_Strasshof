@@ -37,7 +37,7 @@ export function AdActionsTable({ actions }: { actions: AdAction[] }) {
       renderActions={(a) => (
         <div className="flex items-center gap-2">
           <Link
-            href={`/admin/patrocinio/acciones/${a.id}/edit`}
+            href={`/admin/sponsoring/aktionen/${a.id}/edit`}
             className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
             aria-label="Bearbeiten"
           >

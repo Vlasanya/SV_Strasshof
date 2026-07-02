@@ -5,6 +5,7 @@ import {
   AdminForm,
   CheckboxField,
   ImageUploadField,
+  TextArea,
   TextField,
 } from "@/components/admin/form-ui";
 import type { MerchItem } from "@/lib/types";
@@ -20,12 +21,12 @@ export function MerchForm({ item }: { item?: MerchItem }) {
         defaultValue={item?.name}
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TextField
-          label="Kategorie"
-          name="category"
-          defaultValue={item?.category}
-          placeholder="Trikot, Accessoires…"
-        />
+      <TextField
+        label="Kategorie"
+        name="category"
+        defaultValue={item?.category}
+        placeholder="Trikots, Shorts, Hoodies, Rucksäcke…"
+      />
         <TextField
           label="Preis (€)"
           name="price"
@@ -33,6 +34,14 @@ export function MerchForm({ item }: { item?: MerchItem }) {
           defaultValue={item?.price}
         />
       </div>
+
+      <TextArea
+        label="Beschreibung"
+        name="description"
+        rows={4}
+        defaultValue={item?.description ?? ""}
+        hint="Wird auf der Produktseite im Shop angezeigt."
+      />
 
       <div>
         <ImageUploadField

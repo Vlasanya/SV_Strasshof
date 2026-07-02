@@ -20,7 +20,7 @@ export function ListToolbar({
       {addHref && (
         <Link
           href={addHref}
-          className="inline-flex items-center gap-2 bg-primary hover:bg-red-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+          className="inline-flex items-center gap-2 bg-primary hover:brightness-90 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
         >
           <Plus className="w-4 h-4" /> {addLabel}
         </Link>

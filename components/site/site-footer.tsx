@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Shield } from "lucide-react";
-import { NAV_LINKS, type ClubInfo } from "@/lib/config";
+import { NAV_LINKS, SITE_LOGO_URL, type ClubInfo } from "@/lib/config";
 import { ContactPhoneActions } from "@/components/site/contact-phone-actions";
+import { SocialLinks } from "@/components/site/social-links";
 import { phoneDisplayList, whatsappWaMeNumber } from "@/lib/phone";
 
 export function SiteFooter({
@@ -11,23 +11,19 @@ export function SiteFooter({
   club: ClubInfo;
   logoUrl?: string | null;
 }) {
+  const crestUrl = logoUrl || SITE_LOGO_URL;
+
   return (
     <footer className="bg-surface-dark text-on-dark mt-24">
       <div className="max-w-[1280px] mx-auto px-4 md:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt={club.name}
-                  className="w-9 h-9 rounded-lg object-contain"
-                />
-              ) : (
-                <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-                  <Shield className="w-4 h-4 text-white" />
-                </div>
-              )}
+              <img
+                src={crestUrl}
+                alt={club.name}
+                className="h-10 w-10 object-contain"
+              />
               <span className="text-xl font-display uppercase tracking-wide">
                 {club.name}
               </span>
@@ -36,6 +32,7 @@ export function SiteFooter({
               Fußballverein in Niederösterreich. Gemeinschaft, Fairplay und
               Nachwuchsförderung.
             </p>
+            <SocialLinks club={club} className="mt-5" />
           </div>
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-on-dark-muted mb-4">

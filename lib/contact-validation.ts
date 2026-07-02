@@ -1,3 +1,13 @@
+export const CONTACT_SUBJECT_OPTIONS = [
+  "Anmeldung",
+  "Sponsoring",
+  "Shop",
+  "Datenschutz / Abmeldung",
+  "Sonstiges",
+] as const;
+
+export type ContactSubject = (typeof CONTACT_SUBJECT_OPTIONS)[number];
+
 export type ContactFormFields = {
   name: string;
   email: string;
@@ -5,6 +15,17 @@ export type ContactFormFields = {
   subject: string;
   message: string;
 };
+
+/** Pre-select Betreff when linking to /kontakt from another section. */
+export function kontaktHref(fromPathname: string): string {
+  if (fromPathname.startsWith("/shop")) {
+    return "/kontakt?betreff=Shop";
+  }
+  if (fromPathname.startsWith("/sponsoring")) {
+    return "/kontakt?betreff=Sponsoring";
+  }
+  return "/kontakt";
+}
 
 export function validateContactForm(fields: ContactFormFields): string | null {
   const name = fields.name.trim();

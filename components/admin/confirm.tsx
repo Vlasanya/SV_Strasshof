@@ -101,7 +101,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
                 className={
                   danger
                     ? "rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
-                    : "rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+                    : "rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:brightness-90 transition-colors"
                 }
               >
                 {opts?.confirmLabel ?? "Bestätigen"}

@@ -59,8 +59,8 @@ const CATEGORY_PALETTE = [
   "bg-green-100 text-green-800",
   "bg-purple-100 text-purple-800",
   "bg-orange-100 text-orange-800",
-  "bg-rose-100 text-rose-800",
-  "bg-red-100 text-red-800",
+  "bg-primary/10 text-primary",
+  "bg-primary/15 text-primary",
 ];
 
 // Youth categories ordered youngest → oldest; anything else (senior/amateur

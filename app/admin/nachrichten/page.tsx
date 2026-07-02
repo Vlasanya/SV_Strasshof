@@ -3,6 +3,7 @@ import { getContactMessages } from "@/lib/data";
 import { deleteContact, toggleContactHandled } from "@/app/admin/actions";
 import { DeleteButton } from "@/components/admin/form-ui";
 import { ListToolbar } from "@/components/admin/list-chrome";
+import { CONTACT_SUBJECT_OPTIONS } from "@/lib/contact-validation";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -69,12 +70,11 @@ export default async function AdminMessagesPage({
           className="border rounded-lg px-3 py-2 text-sm"
         >
           <option value="">Alle Betreffe</option>
-          <option value="Anmeldung">Anmeldung</option>
-          <option value="Sponsoring">Sponsoring</option>
-          <option value="Datenschutz / Abmeldung">
-            Datenschutz / Abmeldung
-          </option>
-          <option value="Sonstiges">Sonstiges</option>
+          {CONTACT_SUBJECT_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
         </select>
 
         <select

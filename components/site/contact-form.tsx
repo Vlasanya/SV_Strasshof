@@ -1,15 +1,18 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { Suspense, useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Send } from "lucide-react";
-import { TextField, SelectField, TextArea } from "@/components/admin/form-ui";
+import { useCart } from "@/components/shop/cart-provider";
+import { formatShopOrderMessage } from "@/lib/shop-cart";
 import {
   submitContact,
   type ContactState,
 } from "@/app/(site)/kontakt/actions";
 import {
+  CONTACT_SUBJECT_OPTIONS,
   type ContactFormFields,
   validateContactForm,
 } from "@/lib/contact-validation";
@@ -39,21 +42,74 @@ function SubmitButton() {
   );
 }
 
-export function ContactForm() {
-  const [fields, setFields] = useState<ContactFormFields>(emptyFields);
+function subjectFromSearchParams(
+  searchParams: ReturnType<typeof useSearchParams>,
+): string {
+  const betreff = searchParams.get("betreff")?.trim() ?? "";
+  return (CONTACT_SUBJECT_OPTIONS as readonly string[]).includes(betreff)
+    ? betreff
+    : "";
+}
+
+function ContactFormInner() {
+  const searchParams = useSearchParams();
+  const { items, clearCart, hydrated: cartHydrated } = useCart();
+  const [fields, setFields] = useState<ContactFormFields>(() => ({
+    ...emptyFields,
+    subject: subjectFromSearchParams(searchParams),
+  }));
+  const [shopMessagePrefilled, setShopMessagePrefilled] = useState(false);
+  const pendingShopOrderRef = useRef(false);
+  const handledSuccessRef = useRef(false);
+  const lastErrorRef = useRef<string | undefined>(undefined);
   const [state, formAction] = useActionState<ContactState, FormData>(
     submitContact,
     { ok: false },
   );
 
   useEffect(() => {
-    if (state.ok) {
-      toast.success("Nachricht gesendet! Wir melden uns bald bei dir.");
-      setFields(emptyFields);
-    } else if (state.error) {
-      toast.error(state.error);
+    const subject = subjectFromSearchParams(searchParams);
+    if (subject) {
+      setFields((prev) =>
+        prev.subject === subject ? prev : { ...prev, subject },
+      );
     }
-  }, [state]);
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!cartHydrated || shopMessagePrefilled) return;
+    const subject = subjectFromSearchParams(searchParams);
+    if (subject !== "Shop" || items.length === 0) return;
+
+    const orderMessage = formatShopOrderMessage(items);
+    setFields((prev) => {
+      if (prev.message.trim()) return prev;
+      return { ...prev, subject: "Shop", message: orderMessage };
+    });
+    setShopMessagePrefilled(true);
+  }, [cartHydrated, items, searchParams, shopMessagePrefilled]);
+
+  useEffect(() => {
+    if (state.ok) {
+      if (handledSuccessRef.current) return;
+      handledSuccessRef.current = true;
+      toast.success("Nachricht gesendet! Wir melden uns bald bei dir.");
+      if (pendingShopOrderRef.current) clearCart();
+      pendingShopOrderRef.current = false;
+      setFields(emptyFields);
+      setShopMessagePrefilled(false);
+      return;
+    }
+
+    handledSuccessRef.current = false;
+
+    if (state.error && state.error !== lastErrorRef.current) {
+      lastErrorRef.current = state.error;
+      toast.error(state.error);
+    } else if (!state.error) {
+      lastErrorRef.current = undefined;
+    }
+  }, [state, clearCart]);
 
   function updateField<K extends keyof ContactFormFields>(
     key: K,
@@ -77,6 +133,7 @@ export function ContactForm() {
     formData.set("phone", fields.phone);
     formData.set("subject", fields.subject);
     formData.set("message", fields.message);
+    pendingShopOrderRef.current = fields.subject === "Shop";
     formAction(formData);
   }
 
@@ -150,12 +207,11 @@ export function ContactForm() {
             className={inputClass}
           >
             <option value="">Betreff wählen…</option>
-            <option value="Anmeldung">Anmeldung</option>
-            <option value="Sponsoring">Sponsoring</option>
-            <option value="Datenschutz / Abmeldung">
-              Datenschutz / Abmeldung
-            </option>
-            <option value="Sonstiges">Sonstiges</option>
+            {CONTACT_SUBJECT_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -177,5 +233,13 @@ export function ContactForm() {
       </div>
       <SubmitButton />
     </form>
+  );
+}
+
+export function ContactForm() {
+  return (
+    <Suspense fallback={<p className="text-sm text-muted-foreground">Laden…</p>}>
+      <ContactFormInner />
+    </Suspense>
   );
 }

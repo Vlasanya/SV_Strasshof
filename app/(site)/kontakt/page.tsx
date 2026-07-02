@@ -5,6 +5,7 @@ import { getClubInfo } from "@/lib/data";
 import { ContactForm } from "@/components/site/contact-form";
 import { PageHeader } from "@/components/site/empty-state";
 import { ContactPhoneActions } from "@/components/site/contact-phone-actions";
+import { SocialLinks } from "@/components/site/social-links";
 import { phoneDisplayList, whatsappWaMeNumber } from "@/lib/phone";
 
 export const metadata: Metadata = { title: "Kontakt" };
@@ -92,6 +93,12 @@ export default async function ContactPage() {
                 </div>
               </div>
             )}
+          </div>
+          <div className="bg-card rounded-2xl border border-border p-6">
+            <p className="text-sm font-semibold text-foreground mb-3">
+              Social Media
+            </p>
+            <SocialLinks club={club} variant="light" />
           </div>
       <p className="text-xs text-muted-foreground px-1">
         Neu im Verein?{" "}

@@ -6,9 +6,12 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { CLUB, newsUrl } from "@/lib/config";
 import { normalizeExternalUrl } from "@/lib/meinturnierplan";
 import {
+  createAndPublishIgCarousel,
+  createAndPublishIgImage,
+  deleteIgMedia,
   ensureFreshIgToken,
   getIgCredentials,
-  igPost,
+  getIgDeleteToken,
   refreshIgToken,
 } from "@/lib/instagram";
 
@@ -182,63 +185,143 @@ export async function upsertNews(
   redirect("/admin/news");
 }
 
-export async function deleteNews(formData: FormData) {
+export async function deleteNews(formData: FormData): Promise<ActionResult> {
   const id = Number(formData.get("id"));
+  if (!id) return { ok: false, error: "Ungültiger Beitrag." };
+
+  const deleteFromInstagram = formData.get("delete_from_instagram") === "true";
   const supabase = await db();
+
+  const { data: article } = await supabase
+    .schema("app")
+    .from("news")
+    .select("instagram_post_id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (deleteFromInstagram && article?.instagram_post_id) {
+    try {
+      const token = await getIgDeleteToken(supabase);
+      if (!token) {
+        return {
+          ok: false,
+          error: "Kein Token zum Löschen auf Instagram konfiguriert.",
+        };
+      }
+      await deleteIgMedia(token, article.instagram_post_id);
+    } catch (e) {
+      return {
+        ok: false,
+        error: e instanceof Error ? e.message : "Instagram-Löschen fehlgeschlagen.",
+      };
+    }
+  }
+
   await supabase.schema("app").from("news").delete().eq("id", id);
   revalidatePath("/admin/news");
   revalidatePath("/news");
+  return { ok: true };
 }
 
 // --- Instagram --------------------------------------------------------------
 // Uses the Instagram Login flow (graph.instagram.com). Token + business id are
 // resolved/refreshed via @/lib/instagram (stored in site_settings, env seed).
 
-function buildNewsCaption(article: {
-  title: string;
-  excerpt: string | null;
-  body: string | null;
-  slug: string | null;
-}): string {
+function buildNewsCaption(
+  article: {
+    title: string;
+    excerpt: string | null;
+    body: string | null;
+    slug: string | null;
+    instagram_hashtags?: string | null;
+  },
+  caption: { mention: string; defaultHashtags: string },
+  hashtagsOverride?: string | null,
+): string {
   const lines = [article.title.toUpperCase(), ""];
   const text = (article.body ?? article.excerpt ?? "").trim();
   if (text) lines.push(text, "");
   const url = newsUrl(article.slug);
   if (url) lines.push(`📰 Ganzen Beitrag lesen: ${url}`, "");
-  const handle = `@${CLUB.shortName.toLowerCase().replace(/\s+/g, "")}`;
-  const tag = CLUB.shortName.replace(/[^a-zA-Z0-9]/g, "");
-  lines.push(`${handle}${tag ? ` #${tag}` : ""} #fussball`);
+  const hashtags = (
+    hashtagsOverride ??
+    article.instagram_hashtags ??
+    caption.defaultHashtags
+  ).trim();
+  lines.push(`${caption.mention}${hashtags ? ` ${hashtags}` : ""}`.trim());
   return lines.join("\n");
 }
 
-// Publish a news article (single image or carousel) to the club's Instagram
-// Business account. Images must be public URLs — the posters already live in the
-// public Supabase `news` bucket, so this works out of the box.
+async function getIgCaptionSettings(
+  supabase: Awaited<ReturnType<typeof db>>,
+): Promise<{ mention: string; defaultHashtags: string }> {
+  const { data } = await supabase
+    .schema("app")
+    .from("site_settings")
+    .select("key, value")
+    .in("key", ["ig_mention", "ig_default_hashtags"]);
+
+  const map: Record<string, string> = {};
+  for (const row of data ?? []) {
+    map[row.key] = row.value ?? "";
+  }
+
+  const fallbackHandle = `@${CLUB.shortName.toLowerCase().replace(/\s+/g, "")}`;
+  const fallbackTag = CLUB.shortName.replace(/[^a-zA-Z0-9]/g, "");
+  const mention = map.ig_mention?.trim() || fallbackHandle;
+  const defaultHashtags =
+    map.ig_default_hashtags?.trim() ||
+    (fallbackTag ? `#${fallbackTag} #fussball` : "#fussball");
+
+  return { mention, defaultHashtags };
+}
+
 export async function postNewsToInstagram(
   id: number,
+  opts: { hashtags?: string } = {},
 ): Promise<{ ok: boolean; error?: string; postId?: string }> {
   const supabase = await db();
 
-  // Refresh the token if it's near expiry, then resolve the active credentials.
   const token = await ensureFreshIgToken(supabase);
   const { businessId: igId } = await getIgCredentials(supabase);
   if (!igId || !token) {
-    return {
-      ok: false,
-      error: "Instagram ist nicht konfiguriert (Token / Konto) unter Einstellungen.",
-    };
+    const error =
+      "Instagram ist nicht konfiguriert (Token / Konto) unter Einstellungen.";
+    await supabase
+      .schema("app")
+      .from("news")
+      .update({
+        instagram_error: error,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+    return { ok: false, error };
   }
 
   const { data: article } = await supabase
     .schema("app")
     .from("news")
-    .select("title, excerpt, body, cover_image, images, slug, published")
+    .select(
+      "title, excerpt, body, cover_image, images, slug, published, instagram_hashtags",
+    )
     .eq("id", id)
     .maybeSingle();
 
   if (!article) return { ok: false, error: "Beitrag nicht gefunden." };
 
-  // Collect public image URLs: gallery first, fall back to the cover.
+  async function recordIgError(error: string) {
+    await supabase
+      .schema("app")
+      .from("news")
+      .update({
+        instagram_error: error,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+    revalidatePath("/admin/news");
+    revalidatePath(`/admin/news/${id}/edit`);
+  }
+
   const images: string[] = (
     (article.images as string[] | null)?.length
       ? (article.images as string[])
@@ -248,68 +331,75 @@ export async function postNewsToInstagram(
   ).filter(Boolean);
 
   if (images.length === 0) {
-    return { ok: false, error: "Der Beitrag hat keine Bilder zum Veröffentlichen." };
+    const error = "Der Beitrag hat keine Bilder zum Veröffentlichen.";
+    await recordIgError(error);
+    return { ok: false, error };
   }
 
-  const caption = buildNewsCaption(article);
+  if (!article.published) {
+    const now = new Date().toISOString();
+    const { error: pubErr } = await supabase
+      .schema("app")
+      .from("news")
+      .update({
+        published: true,
+        published_at: now,
+        updated_at: now,
+      })
+      .eq("id", id);
+    if (pubErr) {
+      const error = "Beitrag konnte vor Instagram nicht veröffentlicht werden.";
+      await recordIgError(error);
+      return { ok: false, error };
+    }
+    article.published = true;
+    revalidatePath("/admin/news");
+    revalidatePath("/news");
+    if (article.slug) revalidatePath(`/news/${article.slug}`);
+  }
+
+  const captionSettings = await getIgCaptionSettings(supabase);
+  const caption = buildNewsCaption(
+    article,
+    captionSettings,
+    opts.hashtags ?? null,
+  );
 
   try {
-    let creationId: string;
+    const postId =
+      images.length === 1
+        ? await createAndPublishIgImage({
+            token,
+            igUserId: igId,
+            imageUrl: images[0],
+            caption,
+          })
+        : await createAndPublishIgCarousel({
+            token,
+            igUserId: igId,
+            imageUrls: images,
+            caption,
+          });
 
-    if (images.length === 1) {
-      const media = await igPost<{ id: string }>(token, `${igId}/media`, {
-        image_url: images[0],
-        caption,
-      });
-      creationId = media.id;
-    } else {
-      // Carousel: a child container per image, then a parent CAROUSEL container.
-      const children: string[] = [];
-      for (const url of images.slice(0, 10)) {
-        const child = await igPost<{ id: string }>(token, `${igId}/media`, {
-          image_url: url,
-          is_carousel_item: "true",
-        });
-        children.push(child.id);
-      }
-      const parent = await igPost<{ id: string }>(token, `${igId}/media`, {
-        media_type: "CAROUSEL",
-        caption,
-        children: children.join(","),
-      });
-      creationId = parent.id;
-    }
+    await supabase
+      .schema("app")
+      .from("news")
+      .update({
+        instagram_posted: true,
+        instagram_post_id: postId,
+        instagram_error: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id);
 
-    const publishedMedia = await igPost<{ id: string }>(
-      token,
-      `${igId}/media_publish`,
-      { creation_id: creationId },
-    );
+    revalidatePath("/admin/news");
+    revalidatePath(`/admin/news/${id}/edit`);
 
-    // If the article was still a draft, publish it so the link in the IG caption
-    // (https://.../news/<slug>) actually resolves instead of 404-ing.
-    if (!article.published) {
-      await supabase
-        .schema("app")
-        .from("news")
-        .update({
-          published: true,
-          published_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          instagram_post: true,
-        })
-        .eq("id", id);
-      revalidatePath("/admin/news");
-      revalidatePath("/news");
-      revalidatePath(`/news/${article.slug}`);
-    }
-
-    return { ok: true, postId: publishedMedia.id };
+    return { ok: true, postId };
   } catch (e) {
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : "Instagram-Fehler.",
-    };
+    const error = e instanceof Error ? e.message : "Instagram-Fehler.";
+    await recordIgError(error);
+    return { ok: false, error };
   }
 }
 
@@ -341,6 +431,27 @@ export async function upsertInstagramSettings(
     rows.push({
       key: "ig_token_expires_at",
       value: expiresAt,
+      updated_at: now,
+    });
+  }
+
+  const mention = String(formData.get("ig_mention") ?? "").trim();
+  rows.push({ key: "ig_mention", value: mention, updated_at: now });
+
+  const defaultHashtags = String(
+    formData.get("ig_default_hashtags") ?? "",
+  ).trim();
+  rows.push({
+    key: "ig_default_hashtags",
+    value: defaultHashtags,
+    updated_at: now,
+  });
+
+  const deleteToken = String(formData.get("ig_delete_access_token") ?? "").trim();
+  if (deleteToken !== "") {
+    rows.push({
+      key: "ig_delete_access_token",
+      value: deleteToken,
       updated_at: now,
     });
   }
@@ -409,11 +520,6 @@ export async function upsertSponsor(
 
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return { ok: false, error: "Der Name ist erforderlich." };
-  const type = String(formData.get("type") ?? "").trim();
-
-  if (!type) {
-    return { ok: false, error: "Der Typ ist erforderlich." };
-  }
 
   const supabase = await db();
 
@@ -451,9 +557,9 @@ export async function upsertSponsor(
   const row = {
     name,
     tier: String(formData.get("tier") ?? "").trim() || null,
-    type,
     logo_url,
     website: String(formData.get("website") ?? "").trim() || null,
+    maps_url: String(formData.get("maps_url") ?? "").trim() || null,
     active: formData.get("active") === "on",
     sort_order: formData.get("sort_order")
       ? Number(formData.get("sort_order"))
@@ -556,6 +662,7 @@ export async function upsertMerch(
   const row = {
     name,
     category: String(formData.get("category") ?? "").trim() || null,
+    description: String(formData.get("description") ?? "").trim() || null,
     price: Number(formData.get("price") ?? 0) || 0,
     image_url,
     sort_order, // ✅ ADD THIS
@@ -581,6 +688,7 @@ export async function upsertMerch(
 
   revalidatePath("/admin/shop");
   revalidatePath("/shop");
+  revalidatePath("/shop/warenkorb");
   redirect("/admin/shop");
 }
 export async function deleteMerch(formData: FormData) {
@@ -589,6 +697,7 @@ export async function deleteMerch(formData: FormData) {
   await supabase.schema("app").from("merch").delete().eq("id", id);
   revalidatePath("/admin/shop");
   revalidatePath("/shop");
+  revalidatePath("/shop/warenkorb");
 }
 
 // --- Teams (app.team) -------------------------------------------------------
@@ -875,17 +984,17 @@ export async function upsertPlan(
   const { error } = await q;
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/admin/patrocinio");
-  revalidatePath("/patrocinio");
-  redirect("/admin/patrocinio");
+  revalidatePath("/admin/sponsoring");
+  revalidatePath("/sponsoring");
+  redirect("/admin/sponsoring");
 }
 
 export async function deletePlan(formData: FormData) {
   const id = Number(formData.get("id"));
   const supabase = await db();
   await supabase.schema("app").from("sponsorship_plan").delete().eq("id", id);
-  revalidatePath("/admin/patrocinio");
-  revalidatePath("/patrocinio");
+  revalidatePath("/admin/sponsoring");
+  revalidatePath("/sponsoring");
 }
 
 async function reorderSponsorshipItems(
@@ -907,8 +1016,8 @@ async function reorderSponsorshipItems(
   const error = results.find((r) => r.error)?.error;
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/admin/patrocinio");
-  revalidatePath("/patrocinio");
+  revalidatePath("/admin/sponsoring");
+  revalidatePath("/sponsoring");
   return { ok: true };
 }
 
@@ -942,17 +1051,17 @@ export async function upsertAdAction(
   const { error } = await q;
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/admin/patrocinio");
-  revalidatePath("/patrocinio");
-  redirect("/admin/patrocinio");
+  revalidatePath("/admin/sponsoring");
+  revalidatePath("/sponsoring");
+  redirect("/admin/sponsoring");
 }
 
 export async function deleteAdAction(formData: FormData) {
   const id = Number(formData.get("id"));
   const supabase = await db();
   await supabase.schema("app").from("ad_action").delete().eq("id", id);
-  revalidatePath("/admin/patrocinio");
-  revalidatePath("/patrocinio");
+  revalidatePath("/admin/sponsoring");
+  revalidatePath("/sponsoring");
 }
 
 export async function reorderAdActions(ids: number[]): Promise<ActionResult> {
@@ -987,8 +1096,8 @@ export async function upsertSponsorshipSettings(
     .upsert(rows, { onConflict: "key" });
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/admin/patrocinio");
-  revalidatePath("/patrocinio");
+  revalidatePath("/admin/sponsoring");
+  revalidatePath("/sponsoring");
   return { ok: true };
 }
 

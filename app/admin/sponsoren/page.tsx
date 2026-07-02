@@ -32,7 +32,7 @@ export default async function AdminSponsorsPage() {
               <th className={thClass}>Unternehmen</th>
               <th className={`${thClass} hidden sm:table-cell`}>Stufe</th>
               <th className={thClass}>Status</th>
-              <th className={thClass}>Typ</th>
+              <th className={`${thClass} hidden md:table-cell`}>Links</th>
               <th className={thClass}></th>
             </tr>
           </thead>
@@ -57,7 +57,11 @@ export default async function AdminSponsorsPage() {
                     offLabel="Inaktiv"
                   />
                 </td>
-                <td className={tdClass}>{row.type ?? "—"}</td>
+                <td className={`${tdClass} text-muted-foreground hidden md:table-cell`}>
+                  {[row.website && "Web", row.maps_url && "Maps"]
+                    .filter(Boolean)
+                    .join(" · ") || "—"}
+                </td>
                 <td className={tdClass}>
                   <div className="flex items-center gap-2">
                     <Link

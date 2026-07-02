@@ -59,7 +59,7 @@ function InstagramPublishPanel({
         type="button"
         onClick={publish}
         disabled={pending || !hasImages || published}
-        className="inline-flex items-center gap-2 bg-primary hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+        className="inline-flex items-center gap-2 bg-primary hover:brightness-90 disabled:opacity-60 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
       >
         <Share2 className="w-4 h-4" />
         {pending ? "Wird veröffentlicht…" : "Auf Instagram veröffentlichen"}

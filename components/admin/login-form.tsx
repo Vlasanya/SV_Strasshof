@@ -106,7 +106,7 @@ export function LoginForm({
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary hover:bg-red-700 disabled:opacity-60 text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
+            className="w-full bg-primary hover:brightness-90 disabled:opacity-60 text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
           >
             {loading ? "Anmelden…" : "Anmelden"}
           </button>

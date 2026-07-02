@@ -1,16 +1,38 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Calendar, ExternalLink } from "lucide-react";
-import { CLUB } from "@/lib/config";
-import { oefbSpieleUrlForTeam } from "@/lib/oefb";
+import { Suspense } from "react";
 import { getClubInfo, getTeams } from "@/lib/data";
+import { getOefbTeamLogoMap } from "@/lib/oefb-data";
 import { PageHeader } from "@/components/site/empty-state";
+import { OefbAttribution } from "@/components/site/oefb-attribution";
+import { OefbSpielePanel } from "@/components/site/oefb-spiele-panel";
+import { SpieleTeamGrid } from "@/components/site/spiele-team-grid";
+import { SpieleTeamPicker } from "@/components/site/spiele-team-picker";
+import {
+  parseTermineTeamFilter,
+  parseTermineTeamIds,
+} from "@/lib/termine-filters";
 
-export const metadata: Metadata = { title: "Spiele & Tabellen" };
+export const metadata: Metadata = {
+  title: "Spiele & Tabellen",
+  description: "ÖFB-Spielpläne und Ergebnisse pro Mannschaft",
+};
 
-export default async function SpielePage() {
+export default async function SpielePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ team?: string; teams?: string }>;
+}) {
+  const params = await searchParams;
+  const teamFilter = parseTermineTeamFilter(params?.team, params?.teams);
+  const teamIds = parseTermineTeamIds(teamFilter);
+
   const [club, teams] = await Promise.all([getClubInfo(), getTeams()]);
-  const base = CLUB.oefbBaseUrl.replace(/\/+$/, "");
+  const teamLogoBySlug = await getOefbTeamLogoMap(teams);
+
+  const selectedTeams =
+    teamIds.length > 0
+      ? teams.filter((team) => teamIds.includes(team.id))
+      : [];
 
   return (
     <section className="section-dark accent-diagonal min-h-[50vh]">
@@ -18,56 +40,34 @@ export default async function SpielePage() {
         <PageHeader
           eyebrow={club.name}
           title="Spiele & Tabellen"
-          subtitle="Aktuelle Ergebnisse, Spielpläne und Tabellen werden offiziell von fussballoesterreich.at bereitgestellt."
+          subtitle="Offizielle Meisterschaftsspiele und Ergebnisse direkt auf der Vereinswebsite — pro Mannschaft."
           tone="dark"
         />
 
-        <div className="mt-10 space-y-6">
-          <a
-            href={`${base}/Mannschaften/`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between gap-4 p-5 rounded-xl border border-white/10 bg-surface-dark-2 hover:border-primary transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-primary" />
-              <span className="font-semibold text-on-dark">
-                Alle Mannschaften auf ÖFB
-              </span>
-            </div>
-            <ExternalLink className="w-4 h-4 text-on-dark-muted" />
-          </a>
+        <div className="mt-10 space-y-8">
+          <div className="rounded-xl border border-white/10 bg-surface-dark p-4 sm:p-5">
+            <Suspense fallback={<p className="text-sm text-on-dark-muted">Laden…</p>}>
+              <SpieleTeamPicker teams={teams} teamFilter={teamFilter} />
+            </Suspense>
+          </div>
 
-          {teams.length > 0 && (
-            <ul className="grid sm:grid-cols-2 gap-3">
-              {teams.map((t) => (
-                  <li key={t.id}>
-                    <a
-                      href={oefbSpieleUrlForTeam(t)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-4 rounded-lg border border-white/10 hover:border-primary text-on-dark text-sm"
-                    >
-                      <span>{t.name}</span>
-                      <ExternalLink className="w-3.5 h-3.5 opacity-60" />
-                    </a>
-                  </li>
+          {selectedTeams.length > 0 ? (
+            <div className="space-y-8">
+              {selectedTeams.map((team) => (
+                <OefbSpielePanel key={team.id} team={team} />
               ))}
-            </ul>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-on-dark-muted">
+                Wähle eine oder mehrere Mannschaften oben — oder tippe direkt auf
+                eine Mannschaft:
+              </p>
+              <SpieleTeamGrid teams={teams} teamLogoBySlug={teamLogoBySlug} />
+            </div>
           )}
 
-          <p className="text-sm text-on-dark-muted">
-            Daten ©{" "}
-            <a
-              href="https://www.fussballoesterreich.at/nutzungsbedingungen"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              fussballoesterreich.at
-            </a>
-            . Anzeige nur über offizielle ÖFB-Seiten.
-          </p>
+          <OefbAttribution />
         </div>
       </div>
     </section>

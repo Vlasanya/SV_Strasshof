@@ -11,42 +11,52 @@ export function ContactPhoneActions({
   whatsappNumber: string;
 }) {
   const [open, setOpen] = useState(false);
+  const whatsappHref = `https://wa.me/${whatsappNumber}`;
 
   return (
     <>
+      <a
+        href={whatsappHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hidden text-sm text-muted-foreground transition-colors hover:text-primary md:inline"
+      >
+        {phone}
+      </a>
+
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+        className="text-sm text-muted-foreground transition-colors hover:text-primary md:hidden"
       >
         {phone}
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-sm rounded-2xl bg-card border border-border p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 md:hidden">
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xl">
             <h3 className="text-lg font-semibold text-foreground">Kontakt</h3>
 
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="mt-2 text-sm text-muted-foreground">
               Wie möchtest du diese Nummer erreichen?
             </p>
 
-            <div className="flex flex-col gap-3 mt-5">
+            <div className="mt-5 flex flex-col gap-3">
               <a
                 href={`tel:${phone}`}
-                className="flex items-center justify-center gap-2 rounded-xl bg-primary text-white py-2.5 text-sm font-semibold hover:bg-red-700 transition-colors"
+                className="flex items-center justify-center gap-2 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:brightness-90"
               >
-                <Phone className="w-4 h-4" />
+                <Phone className="h-4 w-4" />
                 Anrufen
               </a>
 
               <a
-                href={`https://wa.me/${whatsappNumber}`}
+                href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm font-semibold hover:bg-muted transition-colors text-foreground"
+                className="flex items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
               >
-                <MessageCircle className="w-4 h-4" />
+                <MessageCircle className="h-4 w-4" />
                 WhatsApp
               </a>
             </div>

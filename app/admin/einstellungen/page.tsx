@@ -65,7 +65,12 @@ export default async function AdminSettingsPage() {
         <p className="text-sm text-muted-foreground mb-4">
           Club-Account für News-Posts verbinden.
         </p>
-        <InstagramSettingsForm status={instagram} />
+        <InstagramSettingsForm
+          status={instagram}
+          igMention={settings["ig_mention"] ?? ""}
+          igDefaultHashtags={settings["ig_default_hashtags"] ?? ""}
+          hasDeleteToken={Boolean(settings["ig_delete_access_token"]?.trim())}
+        />
       </section>
     </div>
   );

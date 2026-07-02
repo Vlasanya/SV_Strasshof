@@ -12,6 +12,7 @@ import { TermineTeamFilter } from "@/components/site/termine-team-filter";
 import { EventTypeBadge } from "@/components/event-type-badge";
 import { EventTypeLegend } from "@/components/event-type-legend";
 import { MeinTurnierplanPanel } from "@/components/site/meinturnierplan-panel";
+import { CalendarSubscribePanel } from "@/components/site/calendar-subscribe-panel";
 import { clubFieldLabel } from "@/lib/club-fields";
 import {
   eventScopeLabel,
@@ -51,6 +52,7 @@ export function PublicEventCalendar({
   view,
   month,
   week,
+  clubName,
 }: {
   events: ClubEvent[];
   teams: Team[];
@@ -59,6 +61,7 @@ export function PublicEventCalendar({
   view: TermineView;
   month: string;
   week: string;
+  clubName: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -144,11 +147,17 @@ export function PublicEventCalendar({
         )}
       </div>
 
+      <CalendarSubscribePanel
+        teams={teams}
+        teamFilter={teamFilter}
+        clubName={clubName}
+      />
+
       {view === "calendar" ? (
         <>
           <p className="text-sm text-on-dark-muted">
             ÖFB-Meisterschaftsspiele erscheinen als{" "}
-            <span className="text-rose-200 font-medium">Spiel</span> (rosa).
+            <span className="text-primary font-medium">Spiel</span> (rot).
             Saison {CLUB.oefbSeasonSlug.replace("Saison-", "").replace("-", "/")}
             : September–Juni — im Sommer (Juli/August) meist keine Spiele.
           </p>

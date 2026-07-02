@@ -203,6 +203,7 @@ export function TextArea({
   onChange,
   rows = 5,
   required,
+  hint,
 }: {
   label: string;
   name: string;
@@ -211,6 +212,7 @@ export function TextArea({
   onChange?: (value: string) => void;
   rows?: number;
   required?: boolean;
+  hint?: string;
 }) {
   const error = useFieldError(name);
   const isControlled = value !== undefined;
@@ -240,6 +242,9 @@ export function TextArea({
       />
 
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      {hint && !error && (
+        <p className="text-xs text-muted-foreground mt-1">{hint}</p>
+      )}
     </div>
   );
 }
@@ -271,7 +276,7 @@ function SubmitButton({ label }: { label: string }) {
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex items-center gap-2 bg-primary hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
+      className="inline-flex items-center gap-2 bg-primary hover:brightness-90 disabled:opacity-60 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
     >
       {pending ? " Wird veröffentlicht..." : label}
     </button>

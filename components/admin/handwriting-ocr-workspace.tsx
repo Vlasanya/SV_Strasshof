@@ -136,7 +136,7 @@ export function HandwritingOcrWorkspace() {
         </button>
         <Link
           href="/admin/news/new"
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:brightness-90"
         >
           Neue News
         </Link>

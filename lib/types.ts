@@ -27,6 +27,9 @@ export interface NewsArticle {
   published: boolean;
   published_at: string | null;
   instagram_posted: boolean;
+  instagram_post_id: string | null;
+  instagram_error: string | null;
+  instagram_hashtags: string | null;
   created_at: string;
 }
 
@@ -37,6 +40,7 @@ export interface Sponsor {
   type: string | null;
   logo_url: string | null;
   website: string | null;
+  maps_url: string | null;
   active: boolean;
   sort_order: number | null;
 }
@@ -59,6 +63,7 @@ export interface MerchItem {
   id: number;
   name: string;
   category: string | null;
+  description: string | null;
   price: number;
   image_url: string | null;
   sizes: string[] | null;

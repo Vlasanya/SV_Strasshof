@@ -9,10 +9,13 @@ export function TermineTeamFilter({
   teams,
   value,
   onChange,
+  variant = "full",
 }: {
   teams: Team[];
   value: string;
   onChange: (next: string) => void;
+  /** `teams-only` hides Gesamtverein (e.g. on /spiele). */
+  variant?: "full" | "teams-only";
 }) {
   const selectedIds = useMemo(() => new Set(parseTermineTeamIds(value)), [value]);
   const sortedTeams = useMemo(
@@ -51,19 +54,21 @@ export function TermineTeamFilter({
         >
           Alle
         </button>
-        <button
-          type="button"
-          onClick={() => onChange("club")}
-          className={cn(
-            "rounded-full px-3 py-1 text-xs font-semibold border transition-colors",
-            modeClub
-              ? "bg-primary text-primary-foreground border-primary"
-              : "border-white/20 text-on-dark-muted hover:border-primary hover:text-primary",
-          )}
-        >
-          Gesamtverein
-        </button>
-        {!modeAll && !modeClub && selectedIds.size > 0 ? (
+        {variant === "full" ? (
+          <button
+            type="button"
+            onClick={() => onChange("club")}
+            className={cn(
+              "rounded-full px-3 py-1 text-xs font-semibold border transition-colors",
+              modeClub
+                ? "bg-primary text-primary-foreground border-primary"
+                : "border-white/20 text-on-dark-muted hover:border-primary hover:text-primary",
+            )}
+          >
+            Gesamtverein
+          </button>
+        ) : null}
+        {!modeAll && (variant === "full" ? !modeClub : true) && selectedIds.size > 0 ? (
           <button
             type="button"
             onClick={() => onChange("")}
@@ -96,10 +101,13 @@ export function TermineTeamFilter({
         })}
       </div>
 
-      {!modeAll && !modeClub && selectedIds.size > 0 ? (
+      {!modeAll && (variant === "full" ? !modeClub : true) && selectedIds.size > 0 ? (
         <p className="text-xs text-on-dark-muted">
           {selectedIds.size} Mannschaft{selectedIds.size === 1 ? "" : "en"}{" "}
-          ausgewählt — Termine und ÖFB-Spiele werden kombiniert angezeigt.
+          ausgewählt
+          {variant === "full"
+            ? " — Termine und ÖFB-Spiele werden kombiniert angezeigt."
+            : " — Spielpläne werden unten angezeigt."}
         </p>
       ) : null}
     </div>

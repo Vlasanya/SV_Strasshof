@@ -74,7 +74,6 @@ export const NAV_LINKS = [
   { href: "/", label: "Start" },
   { href: "/mannschaften", label: "Mannschaften" },
   { href: "/termine", label: "Termine" },
-  { href: "/beitritt", label: "Mitglied werden" },
   { href: "/spiele", label: "Spiele" },
   { href: "/news", label: "News" },
   { href: "/sponsoren", label: "Sponsoren" },

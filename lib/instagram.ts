@@ -15,12 +15,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // endpoint lives at the unversioned host.
 const IG_HOST = "https://graph.instagram.com";
 export const IG_GRAPH = `${IG_HOST}/v21.0`;
+const FB_GRAPH = "https://graph.facebook.com/v21.0";
 
 // Refresh ~10 days before expiry; long-lived tokens last ~60 days.
 const REFRESH_THRESHOLD_MS = 10 * 24 * 60 * 60 * 1000;
 const DEFAULT_TTL_SEC = 60 * 24 * 60 * 60; // 60 days
 
 const SETTING_TOKEN = "ig_access_token";
+const SETTING_DELETE_TOKEN = "ig_delete_access_token";
 const SETTING_EXPIRES = "ig_token_expires_at";
 const SETTING_BUSINESS_ID = "ig_business_account_id";
 
@@ -73,6 +75,16 @@ export async function getIgCredentials(supabase: Db): Promise<IgCredentials> {
     businessId,
     expiresAt: Number.isNaN(parsed) ? null : parsed,
   };
+}
+
+/** Token for DELETE operations (Facebook Login + instagram_manage_contents). */
+export async function getIgDeleteToken(supabase: Db): Promise<string> {
+  const s = await readSettings(supabase, [SETTING_DELETE_TOKEN, SETTING_TOKEN]);
+  return (
+    clean(s[SETTING_DELETE_TOKEN]) ||
+    clean(s[SETTING_TOKEN]) ||
+    clean(process.env.IG_ACCESS_TOKEN)
+  );
 }
 
 async function persistToken(
@@ -163,4 +175,149 @@ export async function igPost<T>(
     throw new Error(json?.error?.message ?? "Instagram API error");
   }
   return json as T;
+}
+
+/** GET from a Graph node. Throws on API error. */
+export async function igGet<T>(
+  token: string,
+  path: string,
+  params: Record<string, string> = {},
+): Promise<T> {
+  const url = new URL(`${IG_GRAPH}/${path}`);
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+  url.searchParams.set("access_token", token);
+  const res = await fetch(url, { cache: "no-store" });
+  const json = await res.json();
+  if (!res.ok) {
+    throw new Error(json?.error?.message ?? "Instagram API error");
+  }
+  return json as T;
+}
+
+const CONTAINER_POLL_MS = 2_000;
+const CONTAINER_MAX_ATTEMPTS = 30;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function waitForIgContainer(
+  token: string,
+  containerId: string,
+  opts?: { pollMs?: number; maxAttempts?: number },
+): Promise<void> {
+  const pollMs = opts?.pollMs ?? CONTAINER_POLL_MS;
+  const maxAttempts = opts?.maxAttempts ?? CONTAINER_MAX_ATTEMPTS;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const { status_code } = await igGet<{ status_code?: string }>(
+      token,
+      containerId,
+      { fields: "status_code" },
+    );
+    if (status_code === "FINISHED") return;
+    if (status_code === "ERROR") {
+      throw new Error("Instagram konnte das Bild nicht verarbeiten.");
+    }
+    await sleep(pollMs);
+  }
+  throw new Error("Instagram brauchte zu lange für die Bildverarbeitung.");
+}
+
+export async function publishIgContainer(
+  token: string,
+  igUserId: string,
+  creationId: string,
+): Promise<string> {
+  await waitForIgContainer(token, creationId);
+  const published = await igPost<{ id: string }>(
+    token,
+    `${igUserId}/media_publish`,
+    { creation_id: creationId },
+  );
+  return published.id;
+}
+
+export async function createAndPublishIgImage(opts: {
+  token: string;
+  igUserId: string;
+  imageUrl: string;
+  caption: string;
+}): Promise<string> {
+  const media = await igPost<{ id: string }>(opts.token, `${opts.igUserId}/media`, {
+    image_url: opts.imageUrl,
+    caption: opts.caption,
+  });
+  return publishIgContainer(opts.token, opts.igUserId, media.id);
+}
+
+export async function createAndPublishIgCarousel(opts: {
+  token: string;
+  igUserId: string;
+  imageUrls: string[];
+  caption: string;
+}): Promise<string> {
+  const children: string[] = [];
+  for (const url of opts.imageUrls.slice(0, 10)) {
+    const child = await igPost<{ id: string }>(opts.token, `${opts.igUserId}/media`, {
+      image_url: url,
+      is_carousel_item: "true",
+    });
+    await waitForIgContainer(opts.token, child.id);
+    children.push(child.id);
+  }
+  const parent = await igPost<{ id: string }>(opts.token, `${opts.igUserId}/media`, {
+    media_type: "CAROUSEL",
+    caption: opts.caption,
+    children: children.join(","),
+  });
+  return publishIgContainer(opts.token, opts.igUserId, parent.id);
+}
+
+export async function deleteIgMedia(
+  token: string,
+  mediaId: string,
+): Promise<void> {
+  const headers = {
+    "User-Agent": "Mozilla/5.0 (compatible; StrasshofSite/1.0)",
+  };
+  const endpoints = [`${FB_GRAPH}/${mediaId}`, `${IG_GRAPH}/${mediaId}`];
+  let lastMessage = "";
+
+  for (const base of endpoints) {
+    const url = new URL(base);
+    url.searchParams.set("access_token", token);
+    const res = await fetch(url, {
+      method: "DELETE",
+      cache: "no-store",
+      headers,
+    });
+    const json = (await res.json()) as {
+      success?: boolean;
+      error?: { message?: string };
+    };
+    if (res.ok && json.success !== false) return;
+    lastMessage = json?.error?.message ?? lastMessage;
+  }
+
+  throw new Error(formatIgDeleteError(lastMessage, token));
+}
+
+function formatIgDeleteError(message: string, token: string): string {
+  const lower = message.toLowerCase();
+  const isIgLoginToken = /^ig/i.test(token);
+
+  if (
+    isIgLoginToken &&
+    (lower.includes("unsupported") ||
+      lower.includes("permission") ||
+      lower.includes("does not exist"))
+  ) {
+    return (
+      "Löschen über die API erfordert einen Facebook-Login-Token mit instagram_manage_contents. " +
+      "Speichere einen «Token zum Löschen» unter Einstellungen → Instagram."
+    );
+  }
+
+  return message || "Konnte nicht von Instagram gelöscht werden.";
 }

@@ -67,49 +67,49 @@ grant select on app.sponsorship_plan, app.ad_action, app.site_settings
 grant all on app.sponsorship_plan, app.ad_action, app.site_settings
   to authenticated;
 
--- Seed defaults (from the UD Fonteta dossier) --------------------------------
+-- Seed defaults (ASKÖ Strasshof SV) -------------------------------------------
 insert into app.sponsorship_plan (name, price, period, features, highlighted, sort_order)
 select * from (values
-  ('Bronce', 600::numeric, 'temporada', array[
-    '2 publicaciones mensuales.',
-    '4 stories mensuales con mención.',
-    'Presencia en la sección de patrocinadores.'
+  ('Bronze', 600::numeric, 'Saison', array[
+    '2 Beiträge pro Monat.',
+    '4 Stories pro Monat mit Erwähnung.',
+    'Präsenz im Sponsorenbereich.'
   ], false, 1),
-  ('Plata', 900::numeric, 'temporada', array[
-    '4 publicaciones mensuales.',
-    '8 stories mensuales con mención.',
-    '1 sorteo conjunto al mes.',
-    'Presencia en la sección de patrocinadores.'
+  ('Silber', 900::numeric, 'Saison', array[
+    '4 Beiträge pro Monat.',
+    '8 Stories pro Monat mit Erwähnung.',
+    '1 gemeinsames Gewinnspiel pro Monat.',
+    'Präsenz im Sponsorenbereich.'
   ], false, 2),
-  ('Oro', 1500::numeric, 'temporada', array[
-    '6 publicaciones mensuales.',
-    '12 stories compartidas.',
-    '2 sorteos conjuntos al mes.',
-    '1 video promocional con jugadores.',
-    'Presencia destacada en la sección de patrocinadores.',
-    'Prioridad en acciones promocionales.'
+  ('Gold', 1500::numeric, 'Saison', array[
+    '6 Beiträge pro Monat.',
+    '12 geteilte Stories.',
+    '2 gemeinsame Gewinnspiele pro Monat.',
+    '1 Werbevideo mit Spielern.',
+    'Hervorgehobene Präsenz im Sponsorenbereich.',
+    'Priorität bei Werbeaktionen.'
   ], true, 3)
 ) as v(name, price, period, features, highlighted, sort_order)
 where not exists (select 1 from app.sponsorship_plan);
 
 insert into app.ad_action (name, note, price, sort_order)
 select * from (values
-  ('Publicidad en camiseta', 'por equipo', 1000::numeric, 1),
-  ('Valla publicitaria', null, 400::numeric, 2),
-  ('Pack 5 stories', null, 100::numeric, 3),
-  ('Enlace destacado en Instagram', null, 200::numeric, 4),
-  ('Exclusividad de sector', null, 500::numeric, 5)
+  ('Werbung auf dem Trikot', 'pro Mannschaft', 1000::numeric, 1),
+  ('Werbebande', null, 400::numeric, 2),
+  ('Paket 5 Stories', null, 100::numeric, 3),
+  ('Hervorgehobener Instagram-Link', null, 200::numeric, 4),
+  ('Branchenexklusivität', null, 500::numeric, 5)
 ) as v(name, note, price, sort_order)
 where not exists (select 1 from app.ad_action);
 
 insert into app.site_settings (key, value) values
-  ('sponsorship_intro_title', '¿Quiénes somos?'),
-  ('sponsorship_intro_body', 'La U.D. Fonteta es mucho más que un club de fútbol. Desde hace más de 45 años somos una referencia deportiva y social en el barrio de Fuente de San Luis. Ofrecemos a niños y niñas un entorno seguro, educativo y saludable donde desarrollarse dentro y fuera del terreno de juego. Actualmente contamos con más de 300 deportistas y sus familias, formando una gran comunidad unida por valores como el esfuerzo, el respeto, el compromiso y la superación.'),
-  ('sponsorship_mission_body', 'En la U.D. Fonteta entendemos el fútbol como una herramienta educativa. A través de él enseñamos valores fundamentales que acompañarán a nuestros jugadores durante toda su vida.'),
-  ('sponsorship_contact_name', 'Francisco Carrasco'),
-  ('sponsorship_contact_role', 'Responsable de Marketing'),
-  ('sponsorship_contact_phone', '690 15 51 90'),
-  ('sponsorship_contact_email', 'udfonteta@gmail.com')
+  ('sponsorship_intro_title', 'Wer wir sind'),
+  ('sponsorship_intro_body', 'Der ASKÖ Strasshof SV ist mehr als ein Fußballverein. Wir bieten Kindern und Jugendlichen ein sicheres, sportliches Umfeld in der Region Niederösterreich. Mit zahlreichen Mannschaften und engagierten Familien stehen wir für Fairplay, Teamgeist und Nachwuchsförderung.'),
+  ('sponsorship_mission_body', 'Fußball verstehen wir als Bildung: Werte wie Respekt, Einsatz und Zusammenhalt begleiten unsere Spielerinnen und Spieler auf und neben dem Platz.'),
+  ('sponsorship_contact_name', ''),
+  ('sponsorship_contact_role', 'Sponsoring & Marketing'),
+  ('sponsorship_contact_phone', ''),
+  ('sponsorship_contact_email', '')
 on conflict (key) do nothing;
 
 notify pgrst, 'reload schema';

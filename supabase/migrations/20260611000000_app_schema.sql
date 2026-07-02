@@ -39,10 +39,12 @@ create table if not exists app.merch (
   id         bigint generated always as identity primary key,
   name       text not null,
   category   text,
+  description text,
   price      numeric(10,2) not null default 0,
   image_url  text,
   sizes      text[],
   in_stock   boolean not null default true,
+  sort_order int not null default 0,
   created_at timestamptz not null default now()
 );
 

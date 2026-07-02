@@ -31,7 +31,7 @@ const NAV = [
   { href: "/admin/termine", label: "Termine", icon: Calendar },
   { href: "/admin/beitritt", label: "Anmeldungen", icon: UserPlus },
   { href: "/admin/sponsoren", label: "Sponsoren", icon: Star },
-  { href: "/admin/patrocinio", label: "Patronat", icon: Handshake },
+  { href: "/admin/sponsoring", label: "Sponsoring", icon: Handshake },
   { href: "/admin/shop", label: "Shop", icon: ShoppingBag },
   { href: "/admin/nachrichten", label: "Nachrichten", icon: Mail },
   { href: "/admin/einstellungen", label: "Einstellungen", icon: Settings },

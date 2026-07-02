@@ -62,7 +62,7 @@ export default async function AdminDashboard() {
       label: "Shop-Artikel",
       value: merch.length,
       icon: ShoppingBag,
-      color: "bg-rose-100 text-rose-600",
+      color: "bg-primary/10 text-primary",
     },
     {
       label: "Kommende Termine",
@@ -91,7 +91,7 @@ export default async function AdminDashboard() {
     { href: "/admin/termine", label: "Termine", icon: Calendar },
     { href: "/admin/beitritt", label: "Anmeldungen", icon: UserPlus },
     { href: "/admin/sponsoren", label: "Sponsoren", icon: Star },
-    { href: "/admin/patrocinio", label: "Patronat", icon: Handshake },
+    { href: "/admin/sponsoring", label: "Sponsoring", icon: Handshake },
     { href: "/admin/shop", label: "Shop", icon: ShoppingBag },
     { href: "/admin/nachrichten", label: "Nachrichten", icon: Mail },
     { href: "/admin/einstellungen", label: "Einstellungen", icon: Settings },

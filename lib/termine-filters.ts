@@ -149,3 +149,10 @@ export function buildTermineQuery(
   const q = params.toString();
   return q ? `?${q}` : "";
 }
+
+/** Build `/spiele` query string from team filter (`team=5`, `teams=5,7`). */
+export function buildSpieleQuery(teamFilter: string = ""): string {
+  const params = encodeTermineTeamQuery(teamFilter);
+  const q = params.toString();
+  return q ? `?${q}` : "";
+}

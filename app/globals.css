@@ -6,7 +6,7 @@
 
 /* ===========================================================================
    THEME: fonteta (default)
-   Brand: Black #111111 (60%) · White #F5F5F5 (30%) · Red #C8102E (10%)
+   Brand: Black #111111 (60%) · White #F5F5F5 (30%) · Red #D82018 (10%, crest)
    Typography: Bebas Neue (display) · Montserrat (body)
    =========================================================================== */
 :root {
@@ -19,21 +19,21 @@
   --popover: #ffffff;
   --popover-foreground: #111111;
 
-  --primary: #c8102e;
+  --primary: #d82018;
   --primary-foreground: #f5f5f5;
   --secondary: #ececec;
   --secondary-foreground: #111111;
   --muted: #ececec;
   --muted-foreground: #5a5a5a;
-  --accent: #c8102e;
+  --accent: #d82018;
   --accent-foreground: #f5f5f5;
-  --destructive: #c8102e;
+  --destructive: #d82018;
   --destructive-foreground: #f5f5f5;
 
   --border: rgba(0, 0, 0, 0.08);
   --input: transparent;
   --input-background: #ffffff;
-  --ring: #c8102e;
+  --ring: #d82018;
 
   /* Dark surfaces used for hero, match center, teams, footer. */
   --surface-dark: #111111;
@@ -49,15 +49,15 @@
   /* Admin sidebar (kept dark across themes). */
   --sidebar: #111111;
   --sidebar-foreground: #f5f5f5;
-  --sidebar-primary: #c8102e;
+  --sidebar-primary: #d82018;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #1f1f1f;
   --sidebar-accent-foreground: #f5f5f5;
   --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #c8102e;
+  --sidebar-ring: #d82018;
 
   /* Chart palette (red-based, with distinct accents for multi-series). */
-  --chart-1: #c8102e;
+  --chart-1: #d82018;
   --chart-2: #2563eb;
   --chart-3: #d97706;
   --chart-4: #16a34a;
@@ -277,4 +277,15 @@
 .nav-underline:hover::after,
 .nav-underline[data-active="true"]::after {
   transform: scaleX(1);
+}
+
+@layer components {
+  .btn-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    transition: filter 0.15s ease;
+  }
+  .btn-primary:hover {
+    filter: brightness(0.9);
+  }
 }

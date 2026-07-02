@@ -11,7 +11,7 @@ import type { SponsorshipPlan } from "@/lib/types";
 
 export function PlanForm({ plan }: { plan?: SponsorshipPlan }) {
   return (
-    <AdminForm action={upsertPlan} cancelHref="/admin/patrocinio">
+    <AdminForm action={upsertPlan} cancelHref="/admin/sponsoring">
       {plan && <input type="hidden" name="id" value={plan.id} />}
       <TextField label="Name" name="name" required defaultValue={plan?.name} placeholder="Bronze, Silber, Gold…" />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -122,6 +122,7 @@ export default async function TerminePage({
               view={view}
               month={month}
               week={weekIso}
+              clubName={club.name}
             />
           </Suspense>
 
